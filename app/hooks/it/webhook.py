@@ -2,11 +2,11 @@
 from flask import Flask, request, jsonify
 from ..route import api_route
 from datetime import datetime  
-import requests
+from  settings import Config
 
  
 
-CHANNEL_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ0eXBlIjowLCJleHAiOjAsImlkIjoxMX0.wNMeUbhzFevFS6c5FxlUW7Hjzb4e5iDlwWCJYivPq5A"
+CHANNEL_ACCESS_TOKEN = Config.IT_CHANNEL_ACCESS_TOKEN
 
 
 @api_route(rule = '', params=None ,methods=['POST', 'GET'])

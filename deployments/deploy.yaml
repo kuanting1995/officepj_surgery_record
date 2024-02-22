@@ -54,7 +54,9 @@ spec:
               value: "https://ing2.kfsyscc.org"
             - name: FK_NAPI_URL
               value: "https://napi.kfsyscc.org"
-           
+            - name: FK_IT_CHANNEL_ACCESS_TOKEN
+              value: "eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ0eXBlIjowLCJleHAiOjAsImlkIjoxMX0.wNMeUbhzFevFS6c5FxlUW7Hjzb4e5iDlwWCJYivPq5A"
+          
           ports:
             - containerPort: 5000
           volumeMounts:

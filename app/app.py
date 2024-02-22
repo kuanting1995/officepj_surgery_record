@@ -64,7 +64,7 @@ def shutdown_session(exception=None):
 @app.route('/')
 def api_index():
     """所有API列表"""
-    from api.route import route_info
+    from hooks.route import route_info
     return route_info(None)
 
 
