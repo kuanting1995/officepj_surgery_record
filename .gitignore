@@ -1,0 +1,13 @@
+/env/*.*
+*.log
+*.lock
+*.tmp
+*.pid
+*.tar
+__pycache__/
+
+*.pyc
+
+env/
+
+\.vscode/settings\.json

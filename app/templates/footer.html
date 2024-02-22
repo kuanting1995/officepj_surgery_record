@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <style>
+            body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                background-color: #FAFAFA;
+                font: 12pt "Tahoma";
+            }
+            * {
+                box-sizing: border-box;
+                -moz-box-sizing: border-box;
+            }
+            .page {
+                width: 210mm; /*隨著紙張大小異動*/
+                min-height: 297mm;/*隨著紙張大小異動*/
+                padding: 10mm;
+                margin: 10mm auto;
+                border: 1px #D3D3D3 solid;
+                border-radius: 5px;
+                background: white;
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            }
+            .subpage {
+                padding: 0.0cm;
+                border: 1px red solid;
+                height: 277mm;/*隨著紙張大小異動*/
+                outline: 1cm #FFEAEA solid;
+            }
+        
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            @media print {
+                html, body {
+                    width: 210mm;/*隨著紙張大小異動*/
+                    height: 297mm; /*隨著紙張大小異動*/
+                }
+                .page {
+                    margin: 0;
+                    border: initial;
+                    border-radius: initial;
+                    width: initial;
+                    min-height: initial;
+                    box-shadow: initial;
+                    background: initial;
+                    page-break-after: always;
+                }
+                
+                * {
+                -webkit-print-color-adjust: exact !important;
+                }
+
+                table,
+                tr {
+                    page-break-inside: avoid;
+                }
+
+                #print_div {
+                    display: none !important;
+                }
+            }
+    </style>
+
+    <meta name="viewport" content="width=device-width">
+    <meta charset="UTF-8">
+    <title>內科病人住院前評估單</title>
+</head>
+
+<body>
+    <div class="book" id="app">
+        <div class="page">
+            <div class="subpage">
+              <table id="rpt_header" class="data-table-header-hidden">
+                <td class="data-table-header-td ">
+                    <img style='WIDTH: 36px; HEIGHT: 49.5px' src='https://gateway.kfsyscc.org/images/syscc.jpg' />
+                </td>
+                <td class="data-table-header-td2">
+                    <span class='mlfont16' style="font-family: 標楷體">醫療財團法人辜公亮基金會和信治癌中心醫院</span>
+                    <br />
+                    <span class='tnfont12'>KOO FOUNDATION SUN YAT-SEN CANCER CENTER</span>
+                    <br />
+                    <span class='mlfont16' style="font-family: 標楷體"><b>住院前門診化學治療病人評估單</b></span>
+                </td>
+                <td style="text-align: left; width:30%; border-bottom:0px black solid;">
+                    <div class="mlfont14" style="font-family: 標楷體;padding-left:5px;">
+                        姓　　名:
+                    </div>
+                    <div class="mlfont14" style="font-family: 標楷體;padding-left:5px;">出生日期:
+                    </div>
+                    <div class="mlfont14" style="font-family: 標楷體;padding-left:5px;">身分證號:
+                    </div>
+                    <div class="mlfont14" style="font-family: 標楷體;padding-left:5px;">病歷號碼:
+                    </div>
+                </td>
+            </table>
+
+
+            
+          </div>  
+        </div>
+
+    </div>
+</body>
+
+</html>
+

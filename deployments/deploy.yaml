@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hookap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hookap
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  revisionHistoryLimit: 3
+  template:
+    metadata:
+      labels:
+        app: hookap
+    spec:
+      containers:
+        - name: hookap
+          image: harbor2.kfsyscc.org/api/hookap:IMAGE_TAG
+          imagePullPolicy: Always
+          env:
+            - name: GUNICORN_WORKERS
+              value: "2"
+            - name: APPLICATION_NAME
+              value: "hookap"
+            - name: APPLICATION_ROOT
+              value: "/hookap"
+            - name: FK_DEBUG
+              value: "False"
+            - name: FK_APP_MODE
+              value: "PRODUCTION"                 
+            - name: FK_REDIS_HOST
+              value: "redis-svc.default.svc.cluster.local"
+            - name: FK_REDIS_PORT
+              value: "6379"
+            - name: FK_REDIS_PASSWORD
+              value: "pwd123456"
+            - name: FK_REDIS_SOCKET_TIMEOUT
+              value: "5"
+            - name: FK_REDIS_CONNECTION_TIMEOUT
+              value: "3"
+            - name: FK_SYSLOG_URL
+              value: "syslog.kfsyscc.org"
+            - name: FK_SYSLOG_PORT
+              value: "5509"
+            - name: FK_K8S_URL
+              value: "https://ing.kfsyscc.org"
+            - name: FK_K8S2_URL
+              value: "https://ing2.kfsyscc.org"
+            - name: FK_NAPI_URL
+              value: "https://napi.kfsyscc.org"
+           
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: tz-config
+              mountPath: /etc/localtime
+      imagePullSecrets:
+        - name: regsecret
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei

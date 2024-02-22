@@ -1,0 +1,110 @@
+variables:
+  CI_USER_ID: 003549
+  CI_REGISTRY: harbor2.kfsyscc.org
+  CI_COMMIT_SHORT_SHA: 24.1.2.11
+  CI_APP_NAME: hookap
+  CI_API: /api/hookap
+  CI_IMAGE:  $CI_REGISTRY$CI_API:$CI_COMMIT_SHORT_SHA
+
+stages:
+  - build
+  - on_build_faild
+  - deply
+  - on_deploy_success
+
+
+build:
+  stage: build
+  # tags:
+  #   - docker-in-docker-tag
+  image:
+    # An alpine-based image with the `docker` CLI installed.
+    name: harbor2.kfsyscc.org/gitlab/docker:latest
+  
+  services:
+   - name: docker:dind
+     command: ["--tls=false", "--insecure-registry=harbor2.kfsyscc.org"]
+
+  variables:
+    # Tell docker CLI how to talk to Docker daemon; see
+    # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-executor
+    DOCKER_HOST: tcp://docker:2375/
+    # Use the overlayfs driver for improved performance:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+
+  before_script:
+    - docker login $CI_REGISTRY -u $CI_HARBOR_USER -p $CI_HARBOR_PASSWORD
+ 
+  script:
+    - docker build -t $CI_IMAGE .
+    - docker push $CI_IMAGE
+
+  only:
+    - goProduction
+
+deply_ing2:
+  stage: deply
+
+  image: 
+    name: harbor2.kfsyscc.org/gitlab/ubuntu:18.04-openssh
+
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y)'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+
+  script:
+    - echo "deply $CI_APP_NAME job"
+    - ssh $K8_2_USER@$K8_2_IP "mkdir -p /home/$K8_2_USER/K8S/$CI_APP_NAME && cd /home/$K8_2_USER/K8S/$CI_APP_NAME/ && [ ! -f ./deploy.yaml ] || mv deploy.yaml deploy.yaml.prev && [ ! -f ./ingress.yaml ] || mv ingress.yaml ingress.yaml.prev && [ ! -f ./service.yaml ] || mv service.yaml service.yaml.prev"
+    - scp deployments/deploy.yaml $K8_2_USER@$K8_2_IP:/home/$K8_2_USER/K8S/$CI_APP_NAME/deploy.yaml
+    - scp deployments/ingress.yaml $K8_2_USER@$K8_2_IP:/home/$K8_2_USER/K8S/$CI_APP_NAME/ingress.yaml
+    - scp deployments/service.yaml $K8_2_USER@$K8_2_IP:/home/$K8_2_USER/K8S/$CI_APP_NAME/service.yaml
+    - ssh $K8_2_USER@$K8_2_IP "sed -i 's/IMAGE_TAG/$CI_COMMIT_SHORT_SHA/g' /home/$K8_2_USER/K8S/$CI_APP_NAME/deploy.yaml"
+    - ssh $K8_2_USER@$K8_2_IP "kubectl apply -f /home/$K8_2_USER/K8S/$CI_APP_NAME/deploy.yaml"
+    - ssh $K8_2_USER@$K8_2_IP "kubectl apply -f /home/$K8_2_USER/K8S/$CI_APP_NAME/ingress.yaml"
+    - ssh $K8_2_USER@$K8_2_IP "kubectl apply -f /home/$K8_2_USER/K8S/$CI_APP_NAME/service.yaml"
+ 
+  only:
+    - goProduction
+
+
+
+on_build_faild:
+  stage: on_build_faild
+
+  image:
+    name: harbor2.kfsyscc.org/gitlab/docker:stable
+
+  variables:
+    DEPLOY_CURL_COMMAND_BODY: '{\"UserID\":\"$CI_USER_ID\", \"TextMsg\":\"$CI_API failed $CI_IMAGE \", \"EmpNO\":\"$CI_USER_ID\", \"ChartNO\":\"\"}'
+    DEPLOY_CURL_COMMAND: 'curl -X POST https://ing.kfsyscc.org/slight/api/misc/SendToLine -H "Content-Type: application/json" -d "$DEPLOY_CURL_COMMAND_BODY"' 
+
+  script:
+    - echo "on_success"
+    - echo $DEPLOY_CURL_COMMAND
+    - 'eval "$DEPLOY_CURL_COMMAND"'
+  when: on_failure
+  only:
+    - goProduction
+
+on_deploy_success:
+  stage: on_deploy_success
+
+  image:
+    name: harbor2.kfsyscc.org/gitlab/docker:stable
+
+  variables:
+    DEPLOY_CURL_COMMAND_BODY: '{\"UserID\":\"$CI_USER_ID\", \"TextMsg\":\"$CI_API deployed $CI_IMAGE \", \"EmpNO\":\"$CI_USER_ID\", \"ChartNO\":\"\"}'
+    DEPLOY_CURL_COMMAND: 'curl -X POST https://ing.kfsyscc.org/slight/api/misc/SendToLine -H "Content-Type: application/json" -d "$DEPLOY_CURL_COMMAND_BODY"' 
+
+  script:
+    - echo "on_success"
+    - echo $DEPLOY_CURL_COMMAND
+    - 'eval "$DEPLOY_CURL_COMMAND"'
+  when: on_success
+  only:
+    - goProduction

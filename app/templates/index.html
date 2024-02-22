@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <script type="text/javascript">
+
+        const doGet = (url) => {
+            return new Promise((resolve, reject) => {
+                fetch(url, {
+                    credentials: 'include',
+                    headers: new Headers({
+                        'Accept': 'application/json'
+                    })
+                }).then((response) => {
+                    return response.json()
+                }).then((data) => {
+                    resolve(data);
+                }).catch((e) => {
+                    reject(e);
+                })
+            })
+        };
+
+        const request_url = window.location.href;
+        const _EMR_URL = 'https://emr.kfsyscc.org';
+
+        const liginfn = () => {
+            const aipUrl = `${_EMR_URL}/userinfo`;
+            doGet(aipUrl)
+                .then((resp) => {
+                    console.log(resp);
+                    if (resp.status === 'false') {
+                        window.location.href = `${_EMR_URL}/signin/?next=${request_url}`;
+                    } 
+                    else if (resp.user.DEPT_CODE !== '2160' 
+                                && resp.user.DEPT_CODE !== '2161' 
+                                && resp.user.DEPT_CODE !== '2165'
+                                && resp.user.USER_ID !== '001849')
+                    {
+                        window.alert('未被授權的使用者');
+                        window.location.href = `${_EMR_URL}/signin/?next=${request_url}`;
+                    }
+                    else {
+                        sessionStorage.setItem('app-userinfo',
+                            {
+                                user: resp.user,
+                                user_name: resp.user.NAME_CH,
+                                user_id: resp.user.USER_ID,
+                                title: resp.user.TITLE_NAME,
+                                email: resp.user.EMAIL,
+                                signup: true,
+                                session_id: resp.session_id,
+                            });
+                        document.getElementById("user-name").innerHTML = resp.user.NAME_CH;
+                        document.getElementById('logout-btn').addEventListener('click', function() {
+                            sessionStorage.removeItem('app-userinfo');
+                            window.location.href = `${_EMR_URL}/logout/?next=${request_url}`;
+                        });
+                    }
+                })
+                .catch((e) => {
+                    success = false;
+                    window.alert('未被授權的使用者');
+                    window.location.href = `${_EMR_URL}/signin/?next=${request_url}`;
+                })
+        }
+        liginfn();
+    </script>
+    <style type="text/css">
+        @media print {
+
+            html,
+            body {
+                width: 210mm;
+                height: 297mm;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            table,
+            pre,
+            blockquote {
+                page-break-inside: avoid;
+            }
+
+            #print_div {
+                display: none !important;
+            }
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 1cm;
+        }
+        body {
+            background: rgb(224, 238, 248);
+            box-sizing: border-box;
+            overflow: auto;
+        }
+
+        .root {
+            border: 0px #cccccc dashed;
+            margin: auto;
+            width: 1000px;
+            padding: 1px;
+            text-align: center;
+        }
+
+        .title-bar {
+            height: 40px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        .odd {
+            background-color: beige;
+            width: 1000px;
+            align-content: center;
+        }
+
+        .even {
+            background-color: beige;
+            width: 1000px;
+            align-content: center;
+        }
+
+        .parameters {
+            background-color: black;
+            color: white
+        }
+
+        #user-name {
+            margin: 5px;
+        }
+
+        #logout-btn {
+            margin: 5px;
+        }
+
+        .navbar {
+            overflow: hidden;
+            background-color: rgb(93, 91, 91);
+            position: sticky;
+            top: 0;
+            width: 1000px;
+            margin: 0 auto;
+
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+            align-content: stretch;        
+        }
+
+        .flex-item-1 {
+            order: 0;
+            flex: 0 1 auto;
+            align-self: auto;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        .navbar a:hover {
+            background: #ddd;
+            color: black;
+        }
+
+        .navbar select {
+            float: left;
+            display: block;
+            background: #ddd;
+            color: black;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+            margin: 10px;
+        }
+
+    </style>
+    <meta charset="UTF-8">
+    <title>API list for KFSYSCC.NAPI</title>
+</head>
+
+<body >
+    <div class="navbar">
+        <div class="flex-item-1 ">
+            <a id='user-name' href="#user-name">User</a>
+            <a id='logout-btn' href="#logout">登出</a>
+
+
+        </div>
+
+        <div class="flex-item-1 ">
+          
+        </div> 
+        <div class="flex-item-1 ">
+
+        </div>        
+    </div>
+    <div class='root'>
+        <div class='title-bar'>
+
+
+        </div>
+ 
+        {% for doc in docs %}
+        <div style="min-height: 61px;"class="api_startpoint" id="api{{loop.index}}"></div>
+        <div class="{{ loop.cycle('odd', 'even') }}">
+            <div class="doc_title" >
+                <form action="{{url_for(doc.endpoint) }}" method="GET" target="new" uri="{{doc.uri}}">
+                    <table border="1" cellpadding="5" style="width:1000px; border:1px #5f0f0f solid;text-align:center;">
+                        <thead>
+                            <tr>
+                                <th colspan="5">{{loop.index}}.</th>
+                            </tr>
+                            <tr>
+                                <th>說明：</th>
+                                <th colspan="4">{{doc.doc['Description']}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <meta charset="UTF-8">
+                            <tr>
+                                <td>URI:</td>
+                                <td colspan="4">{{url_for(doc.endpoint) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Methods:</td>
+                                <td colspan="4">{{doc.doc.Methods}}</td>
+                            </tr>
+                            <tr class="parameters">
+                                <td colspan="5"> 參數：</td>
+                            </tr>
+                            <thead class="parameters">
+                                <th>&nbsp;</th>
+                                <th>名稱</th>
+                                <th>必填</th>
+                                <th>說明</th>
+                                <th>輸入</th>
+                            </thead>
+                            {% for param in doc.doc.Parameters %}
+                            <tr class="parameters">
+                                <td>{{loop.index}} .</td>
+                                <td>{{param.Name}}</td>
+                                <td>{{param.Required}}</td>
+                                <td>{{param.Description}}</td>
+                                <td><input type="text" name="{{param.Name}}"></td>
+                            </tr>
+                            {% endfor %}
+                            <tr class="parameters">
+                                <td  colspan="5">
+                                    {% if doc.methodPost== "POST" %}
+                                        <input style="margin: 5px;" formmethod="POST" type="submit" value="測試 POST">
+                                    {% endif %}
+                                    {% if doc.methodGet == "GET" %}
+                                        <input style="margin: 5px;" type="submit" value="測試 GET">
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+
+        
+        {% endfor %}
+
+    </div>
+
+</body>
+
+</html>
