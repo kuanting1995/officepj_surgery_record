@@ -85,13 +85,10 @@ backlog = 500
 # 
 
 # workers = os.getenv('GUNICORN_WORKERS', (multiprocessing.cpu_count()))
-
 workers = os.getenv('GUNICORN_WORKERS', Config.G_WORKERS)
-
 
 # --max-requests 的適合值可能會根據你的應用程式特性和工作負載有所不同。這個選項的主要目的是防止長期運行的 worker 因為可能的記憶體洩漏而消耗過多的資源。
 max_requests =1000 
-
 # --max-requests-jitter 是 Gunicorn 的一個設定選項，用於在 --max-requests 的基礎上添加一些隨機變化。此選項的目的是防止所有 worker 在同一時間重啓。
 max_requests_jitter=100
 
@@ -230,8 +227,6 @@ proc_name = None
 # for performance:
 keepalive = os.getenv('GUNICORN_KEEPALIVE', 3)
 
-
-
 #
 # Server hooks
 #
@@ -271,9 +266,9 @@ def worker_int(worker):
 def worker_abort(worker):
     worker.log.info("worker received SIGABRT signal")
 
-lock = multiprocessing.Lock()
+# lock = multiprocessing.Lock()
 
-def pre_request(worker, req):
-    req.headers.append(('FLASK_LOCK', lock))
+# def pre_request(worker, req):
+#     req.headers.append(('FLASK_LOCK', lock))
  
 

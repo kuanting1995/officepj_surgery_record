@@ -12,15 +12,17 @@ from flasgger import Swagger
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = 'DEFAULT@SECLEVEL=0'
 
 app = Flask(__name__)
+
+# 设置 Reverse Proxy
 app.wsgi_app = ReverseProxied(app.wsgi_app, script_name=Config.APPLICATION_ROOT)
 
 # Config
 app.config.from_object(Config)
 
+# 设置 Swagger
 app.config['SWAGGER'] = {
     'base_url': Config.APPLICATION_ROOT,  # 设置 Swagger UI 的基础 URL
 }
-
 swagger =  Swagger(app, config={
     'headers': [],
     'specs': [
@@ -73,6 +75,7 @@ def initial_app():
     initial_cache(app) 
     initialize_route(app)
     logger.info(' Listening at: http://localhost:5000')
+
 
 if __name__ != "__main__":
     initial_app()
