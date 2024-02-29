@@ -20,7 +20,7 @@ req_params['TextMsg'] = ['required']
 
 @api_route(rule = '', params=req_params ,methods=['POST', 'GET'])
 def _sendTxtMsg(args):
-    '''{ "Description": "SendTxtMsg", "Methods":"POST, GET", "Content-Type":"application/json",
+    '''{ "Description": "傳送訊息", "Methods":"POST, GET", "Content-Type":"application/json",
          "Parameters":[
              {"Description":"UserID", "Name":"UserID", "Required":true},
              {"Description":"TextMsg", "Name":"TextMsg", "Required":true}
