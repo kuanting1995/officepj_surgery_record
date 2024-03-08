@@ -11,7 +11,7 @@ def handler_exists(logger, handler_type):
     return any(isinstance(handler, handler_type) for handler in logger.handlers)
 
 if(not Config.DEBUG):
-    if handler_exists(logger, SysLogHandler):  # 检查是否已经有处理器，避免重复添加
+    if not handler_exists(logger, SysLogHandler):  # 检查是否已经有处理器，避免重复添加
         handler = SysLogHandler((Config.SYSLOG_URL, int(Config.SYSLOG_PORT)),)
         formatter = RequestFormatter(
             '[%(process)s] [%(asctime)s] %(remote_addr)s requested %(url)s\n'
@@ -23,7 +23,7 @@ if(not Config.DEBUG):
         
         
 else:
-    if handler_exists(logger, logging.FileHandler):  # 检查是否已经有处理器，避免重复添加
+    if not handler_exists(logger, logging.FileHandler):  # 检查是否已经有处理器，避免重复添加
         logger = logging.getLogger("gunicorn.error")
         handler = FileHandler('./log/debug/flask.log')
         formatter = RequestFormatter(
