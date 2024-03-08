@@ -14,7 +14,7 @@ if(not Config.DEBUG):
     if not handler_exists(logger, SysLogHandler):  # 检查是否已经有处理器，避免重复添加
         handler = SysLogHandler((Config.SYSLOG_URL, int(Config.SYSLOG_PORT)),)
         formatter = RequestFormatter(
-            '[%(process)s] [%(asctime)s] %(remote_addr)s requested %(url)s\n'
+            '[%(app_name)s] [%(asctime)s] %(remote_addr)s requested %(url)s\n'
             '%(levelname)s in %(module)s: %(message)s'
         )
         handler.setFormatter(formatter)
@@ -27,7 +27,7 @@ else:
         logger = logging.getLogger("gunicorn.error")
         handler = FileHandler('./log/debug/flask.log')
         formatter = RequestFormatter(
-            '[%(process)s] [%(asctime)s] %(remote_addr)s requested %(url)s\n'
+            '[%(app_name)s] [%(asctime)s] %(remote_addr)s requested %(url)s\n'
             '%(levelname)s in %(module)s: %(message)s'
         )
         handler.setFormatter(formatter) 

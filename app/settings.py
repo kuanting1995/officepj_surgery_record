@@ -80,7 +80,9 @@ class RequestFormatter(logging.Formatter):
         if has_request_context():
             record.url = request.url
             record.remote_addr = GetXClientIP(request)
+            record.app_name = Config.APPLICATION_NAME
         else:
             record.url = None
             record.remote_addr = None
+            record.app_name = Config.APPLICATION_NAME
         return super().format(record)
