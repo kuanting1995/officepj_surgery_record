@@ -27,7 +27,7 @@ else:
         logger = logging.getLogger("gunicorn.error")
         handler = FileHandler('./log/debug/flask.log')
         formatter = RequestFormatter(
-            '[%(app_name)s] [%(asctime)s] %(remote_addr)s requested %(url)s\n'
+            '[%(app_name)s] [%(process)s] [%(asctime)s] %(remote_addr)s requested %(url)s\n'
             '%(levelname)s in %(module)s: %(message)s'
         )
         handler.setFormatter(formatter) 
