@@ -10,6 +10,7 @@ from lib.utils import call_api
 from lib.logger import logger
 from lib.Checker import isNone
 from hooks.utils import get_user_info
+from lib.web import  apikey_required
 
 CHANNEL_ACCESS_TOKEN = Config.IT_CHANNEL_ACCESS_TOKEN
 
@@ -19,6 +20,7 @@ req_params['TextMsg'] = ['required']
 
 
 @api_route(rule = '', params=req_params ,methods=['POST', 'GET'])
+# @apikey_required(apifor=['KFSYSCC'])
 def _sendTxtMsg(args):
     '''{ "Description": "傳送訊息", "Methods":"POST, GET", "Content-Type":"application/json",
          "Parameters":[

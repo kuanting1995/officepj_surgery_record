@@ -49,8 +49,17 @@
                                 title: resp.user.TITLE_NAME,
                                 email: resp.user.EMAIL,
                                 signup: true,
-                                session_id: resp.session_id,
+                                session_id: resp.user.TOKEN,
                             });
+                        var inputs = document.getElementsByName("authorization");
+                        for(var i = 0; i < inputs.length; i++) {
+                            inputs[i].value = resp.user.TOKEN; // 将每个元素的值设置为 "新的值"
+                        }
+                        var inputs = document.getElementsByName("x-api-user");
+                        for(var i = 0; i < inputs.length; i++) {
+                            inputs[i].value = resp.user.USER_ID; // 将每个元素的值设置为 "新的值"
+                        }
+
                         document.getElementById("user-name").innerHTML = resp.user.NAME_CH;
                         document.getElementById('logout-btn').addEventListener('click', function() {
                             sessionStorage.removeItem('app-userinfo');
@@ -240,6 +249,15 @@
                             </tr>
                             <tr class="parameters">
                                 <td colspan="5"> 參數：</td>
+                            </tr>
+                            <tr style="display: none;">
+                                <input type="text" id="x-api-key" name="x-api-key" value='_FZ0bxONBP6Z6NxnJ8Z7jA' style="display: none;">
+                            </tr>
+                            <tr style="display: none;">
+                                <input type="text"  name="x-api-user"  style="display: none;">
+                            </tr>
+                            <tr style="display: none;">
+                                <input type="text" name="authorization" style="display: none;">
                             </tr>
                             <thead class="parameters">
                                 <th>&nbsp;</th>
