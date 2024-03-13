@@ -35,6 +35,7 @@ def _sendTxtMsg(args):
     def _check_parameter():
         args['now'] = datetime.now()
         args['USER_INFO'] = get_user_info(args['UserID'])
+        logger.error('test')
         if(isNone(args['USER_INFO']) or not args['USER_INFO']['status']):
             raise Exception('員工資料錯誤')
         
