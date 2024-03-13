@@ -11,7 +11,7 @@ class Config(object):
     G_WORKERS = int(os.getenv('GUNICORN_WORKERS', '2'))
     APPLICATION_NAME = os.getenv('APPLICATION_NAME', 'hookap')
     APPLICATION_ROOT = os.getenv('APPLICATION_ROOT', '/hookap')
-    DEBUG = (os.getenv('FK_DEBUG', 'False') == 'True')
+    DEBUG = (os.getenv('FK_DEBUG', 'True') == 'True')
     APP_MODE = os.getenv('FK_APP_MODE', 'TEST')
     SYSLOG_URL = os.getenv('FK_SYSLOG_URL', 'syslog.kfsyscc.org')
     SYSLOG_PORT = int(os.getenv('FK_SYSLOG_PORT', '5509'))
