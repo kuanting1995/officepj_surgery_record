@@ -257,4 +257,18 @@ def isEmailValid(mail) -> bool :
     return True
    
 
-   
+def is8Num(no):
+    if no is None:
+        return False
+    if not re.match('^[0-9]{8}', no):
+        return False
+    
+    return True
+
+def is4Num(no):
+    if no is None:
+        return False
+    if not re.match('^[0-9]{4}', no):
+        return False
+    
+    return True
