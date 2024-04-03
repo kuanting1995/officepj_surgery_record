@@ -1,120 +1,9 @@
 import requests
 import json
+from datetime import datetime
 
-# active order分類按鈕 x5
-def makeFlexMsg_CategoryOrder(data):
-    msg = {
-        "type": "flex",
-        "contents": {
-            "body": [
-			{
-				"type": "bodycontainer",
-				"contents": [
-					{
-						"type": "text",
-						"text": "病人" + data['PAT_BASEINFO']['PAT_NAME'],
-						"align": "left",
-						"fontColor": "#373737",
-						"fontSize": 18,
-						"fontStyle": "normal",
-						"fontWeight": 900,
-						"marginTop": 10
-					}
-				],
-				"borderColor": "#DCDCDC",
-				"paddingStart": 10,
-				"paddingEnd": 10
-			},
-			{
-				"type": "bodycontainer",
-				"contents": [
-					{
-						"type": "text",
-						"text": "分類查詢active order:",
-						"align": "left",
-						"fontColor": "#373737",
-						"fontSize": 16,
-						"fontStyle": "normal",
-						"fontWeight": 600,
-						"marginTop": 10
-					}
-				],
-				"borderColor": "#DCDCDC",
-				"paddingTop": 0,
-				"paddingBottom": 0,
-				"paddingStart": 10,
-				"paddingEnd": 10
-			},
-			{
-				"type": "separator",
-				"height": 1,
-				"bgcolor": "#DCDCDC"
-			}
-		],
-            "footer": [
-			{
-				"type": "footercontainer",
-				"contents": [
-					{
-						"type": "postbackbutton",
-						"text": "口服",
-						"style": "primary",
-						"bgcolor": "#2C5062",
-                        "displayText": '已查詢"口服"active order',
-                        "data": "value=3"
-					},
-					{
-						"type": "postbackbutton",
-						"text": "針劑",
-						"style": "primary",
-						"bgcolor": "#99AAB6",
-                        "displayText": '已查詢"針劑"active order',
-                        "data": "value=4"
-					},
-					{
-						"type": "postbackbutton",
-						"text": "護理",
-						"style": "primary",
-						"bgcolor": "#6A8391",
-                        "displayText": '已查詢"護理"active order',
-                        "data": "value=5"
-					}
-				],
-				"borderColor": "#DCDCDC",
-				"paddingStart": 10,
-				"paddingEnd": 10
-			},
-			{
-				"type": "footercontainer",
-				"contents": [
-					{
-						"type": "postbackbutton",
-						"text": "外用",
-						"style": "primary",
-						"bgcolor": "#6A8391",
-                        "displayText": '已查詢"外用"active order',
-                        "data": "value=6"
-					},
-					{
-						"type": "postbackbutton",
-						"text": "病檢",
-						"style": "primary",
-						"bgcolor": "#2C5062",
-                        "displayText": '已查詢"病檢"active order',
-                        "data": "value=7"
-					}
-				],
-				"borderColor": "#DCDCDC",
-				"paddingStart": 10,
-				"paddingEnd": 10
-			}
-		]
-        }
-    }
-    return msg
-
-# 製作分類過的active order列表
-def makeFlexMsg_OrderDetails(data):
+# active order分類按鈕
+def makeFlexMsg_CategoryOrder(_id, obj, Majorname_list):
     msg = {
         "type": "flex",
         "contents": {
@@ -124,8 +13,7 @@ def makeFlexMsg_OrderDetails(data):
                     "contents": [
                         {
                             "type": "text",
-                            "text": f"病人{data['PAT_INFO']['PAT_NAME']} <{data['data'][0]['MajorclassText']} active order>",
-                            # "text": f"病人 <{data['data'][0]['MajorclassText']} active order>",
+                            "text": f"病人{obj['PAT_NAME']} active order",
                             "align": "left",
                             "fontColor": "#373737",
                             "fontSize": 18,
@@ -139,6 +27,126 @@ def makeFlexMsg_OrderDetails(data):
                     "paddingEnd": 10
                 },
                 {
+                    "type": "bodycontainer",
+                    "contents": [
+                        {
+                            "type": "text",
+                            "text": "分類查詢:",
+                            "align": "left",
+                            "fontColor": "#373737",
+                            "fontSize": 15,
+                            "fontStyle": "normal",
+                            "fontWeight": 500,
+                            "marginTop": 10
+                        }
+                    ],
+                    "borderColor": "#DCDCDC",
+                    "paddingStart": 10,
+                    "paddingEnd": 10
+                },
+                {
+                    "type": "separator",
+                    "height": 1,
+                    "bgcolor": "#DCDCDC"
+                }
+            ],
+            "footer": []
+        }
+    }
+
+    for i, majorname in enumerate(Majorname_list, start=1):
+        if i % 5 == 1:  # Start a new footercontainer every 5 items
+            msg['contents']['footer'].append({
+                "type": "footercontainer",
+                "contents": [],
+                "borderColor": "#DCDCDC",
+                "paddingStart": 10,
+                "paddingEnd": 10
+            })
+
+        msg['contents']['footer'][-1]['contents'].append({
+            "type": "postbackbutton",
+            "text": majorname,
+            "style": "primary",
+            "bgcolor": "#99AAB6",
+            "displayText": f"您已查詢'{majorname}' active order",
+            "data": f"value={i+2}&id={_id}"
+        })
+
+    # Add the special element to the last footercontainer
+    msg['contents']['footer'].append({
+        "type": "footercontainer",
+        "contents": [{"type": "postbackbutton",
+        "text": "最新執行",
+        "style": "primary",
+        "bgcolor": "#2C5062",
+        "displayText": f'您已查詢"最新執行" active order',
+        "data": f"value=13&id={_id}"}],
+        "borderColor": "#DCDCDC",
+		"paddingStart": 10,
+		"paddingEnd": 10
+    })
+
+    return msg
+
+
+
+
+# 製作分類過的active order列表
+def makeFlexMsg_OrderDetails(patname, bedno, majorname, activeorder_by_type):
+    msg = {
+        "type": "flex",
+        "contents": {
+            "body": [
+                {
+                    "type": "bodycontainer",
+                    "contents": [
+                        {
+                            "type": "text",
+                            "text": f"病人:{patname} ",
+                            "align": "left",
+                            "fontColor": "#373737",
+                            "fontSize": 18,
+                            "fontStyle": "normal",
+                            "fontWeight": 900,
+                            "marginTop": 5
+                        },
+                        {
+                            "type": "text",
+                            "text": f"床號:{bedno}",
+                            "align": "right",
+                            "fontColor": "#373737",
+                            "fontSize": 16,
+                            "fontStyle": "normal",
+                            "fontWeight": 600,
+                            "marginTop": 5
+                        }
+                    ],
+                    "borderColor": "#DCDCDC",
+                    "paddingStart": 10,
+                    "paddingEnd": 10
+                },
+                {
+                    "type": "bodycontainer",
+                    "contents": [
+                        {
+                            "type": "text",
+                            "text": f"< {majorname} active order >",
+                            "align": "left",
+                            "fontColor": "#373737",
+                            "fontSize": 18,
+                            "fontStyle": "normal",
+                            "fontWeight": 900,
+                            "marginTop": 10
+                        }
+                    ],
+                    "borderColor": "#DCDCDC",
+                    "paddingTop": 0,
+                    "paddingBottom": 0,
+                    "paddingStart": 10,
+                    "paddingEnd": 10
+                },
+                {
                     "type": "separator",
                     "height": 1,
                     "bgcolor": "#DCDCDC"
@@ -146,9 +154,15 @@ def makeFlexMsg_OrderDetails(data):
             ]
         }
     }
-    # 將active_order_data 先做日期排序：
-    sorted_orders = sorted(data['data'], key=lambda order: order["BeginDateTimeStr"])
-    for activeorder in sorted_orders:
+    
+    def get_datetime_str(order):
+        # print(order)
+        beg_datetime = datetime.strptime(order['BEG_DATE'] + order['BEG_TIME'] + '00', '%Y/%m/%d%H%M%S')
+        return beg_datetime.strftime('%Y-%m-%d %H:%M')
+
+    sorted_orders = sorted(activeorder_by_type, key=get_datetime_str,reverse=True)
+
+    for order_data in sorted_orders:
         date_container = {
             "type": "bodycontainer",
             "contents": [
@@ -164,7 +178,7 @@ def makeFlexMsg_OrderDetails(data):
                 },
                 {
                     "type": "text",
-                    "text": activeorder["BeginDateTimeStr"],
+                    "text": get_datetime_str(order_data),
                     "flex": 3,
                     "align": "left",
                     "fontColor": "#373737",
@@ -194,7 +208,7 @@ def makeFlexMsg_OrderDetails(data):
                 },
                 {
                     "type": "text",
-                    "text": activeorder["OrddTxt"],
+                    "text": order_data["ORDD_TXT"],
                     "flex": 3,
                     "align": "left",
                     "fontColor": "#373737",
@@ -214,8 +228,141 @@ def makeFlexMsg_OrderDetails(data):
 
     return msg
 
+# 最新執行 active order列表
+def makeFlexMsg_OrderDetailsRecent(patname,bedno,ordertype_value ,data):
+    msg = {
+	"type": "flex",
+	"contents": {
+		"body": [
+			{
+				"type": "bodycontainer",
+				"contents": [
+					{
+						"type": "text",
+						"text": f"病人:{patname} ",
+						"align": "left",
+						"fontColor": "#373737",
+						"fontSize": 18,
+						"fontStyle": "normal",
+						"fontWeight": 900,
+						"marginTop": 5
+					},
+					{
+						"type": "text",
+						"text": f"床號:{bedno}",
+						"align": "right",
+						"fontColor": "#373737",
+						"fontSize": 16,
+						"fontStyle": "normal",
+						"fontWeight": 600,
+						"marginTop": 5
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingStart": 10,
+				"paddingEnd": 10
+			},
+			{
+				"type": "bodycontainer",
+				"contents": [
+					{
+						"type": "text",
+						"text": f"< {ordertype_value} active order >",
+						"align": "left",
+						"fontColor": "#373737",
+						"fontSize": 18,
+						"fontStyle": "normal",
+						"fontWeight": 900,
+						"marginTop": 10
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingTop": 0,
+				"paddingBottom": 0,
+				"paddingStart": 10,
+				"paddingEnd": 10
+			},
+			{
+				"type": "separator",
+				"height": 1,
+				"bgcolor": "#DCDCDC"
+			}
+		]
+	}
+}
+    # 將active_order_data 先做日期排序：
+    current_year = datetime.now().year
+    sorted_orders = sorted(data, key=lambda order: datetime.strptime(str(current_year) + "/" + order["BEG_ORDER"].split('\n')[0], '%Y/%m/%d %H:%M'),reverse=True)
+
+    for order_data in sorted_orders:
+        date_container = {
+            "type": "bodycontainer",
+            "contents": [
+                {
+                    "type": "text",
+                    "text": "日期:",
+                    "align": "left",
+                    "fontColor": "#373737",
+                    "fontSize": 15,
+                    "fontStyle": "normal",
+                    "fontWeight": 400,
+                    "marginTop": 10
+                },
+                {
+                    "type": "text",
+                    "text":  str(current_year) + "/" + order_data["BEG_ORDER"].split('\n')[0],
+                    "flex": 3,
+                    "align": "left",
+                    "fontColor": "#373737",
+                    "fontSize": 15,
+                    "fontStyle": "normal",
+                    "fontWeight": 400,
+                    "marginTop": 10
+                }
+            ],
+            "borderColor": "#DCDCDC",
+            "paddingStart": 10,
+            "paddingEnd": 10
+        }
+
+        text_container = {
+            "type": "bodycontainer",
+            "contents": [
+                {
+                    "type": "text",
+                    "text": "orddtxt:",
+                    "align": "left",
+                    "fontColor": "#373737",
+                    "fontSize": 15,
+                    "fontStyle": "normal",
+                    "fontWeight": 400,
+                    "marginTop": 10
+                },
+                {
+                    "type": "text",
+                    "text": order_data["NAME_ORDER"],
+                    "flex": 3,
+                    "align": "left",
+                    "fontColor": "#373737",
+                    "fontSize": 15,
+                    "fontStyle": "normal",
+                    "fontWeight": 400,
+                    "marginTop": 10
+                }
+            ],
+            "bgcolor": "#bdc9d4",
+            "borderColor": "#DCDCDC",
+            "paddingStart": 10,
+            "paddingEnd": 10
+        }
+
+        msg['contents']['body'].extend([date_container, text_container])
+
+    return msg
+
+
 # 病人基本資料+ 查詢按鈕 x3
-def makeFlexMsg_PatBaseInfo(data):
+def makeFlexMsg_PatBaseInfo(_id,data):
     patName = data['PAT_NAME'] 
     charNo = data['CHART_NO']
     patidNo = data['PAT_IDNO']
@@ -472,7 +619,7 @@ def makeFlexMsg_PatBaseInfo(data):
 						"text": "查詢active order",
 						"style": "primary",
 						"displayText": "您已查詢active order",
-                        "data": "value=0"
+                        "data": "value=0&id="+_id
 					}
 				],
 				"borderColor": "#DCDCDC",
@@ -487,7 +634,7 @@ def makeFlexMsg_PatBaseInfo(data):
 						"text": "生命徵象",
 						"style": "primary",
                         "displayText": "您已查詢生命徵象",
-                        "data": "value=1"
+                        "data": "value=1&id="+_id
 					}
 				],
 				"borderColor": "#DCDCDC",
@@ -502,7 +649,7 @@ def makeFlexMsg_PatBaseInfo(data):
 						"text": "檢驗檢查",
 						"style": "primary",
                         "displayText": "您已查詢檢驗檢查",
-                        "data": "value=2"
+                        "data": "value=2&id="+_id
 					}
 				],
 				"borderColor": "#DCDCDC",

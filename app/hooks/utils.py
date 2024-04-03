@@ -2,9 +2,10 @@
 import json
 from lib.cacheUtils import cache
 from settings import Config
-from lib.utils import call_api,call_api_get
 from lib.logger import logger
 from lib.Checker import isNone
+from lib.utils import call_api,call_api_get
+import requests
 
 @cache.memoize(3600)  
 def get_user_info(user_id):
@@ -79,68 +80,87 @@ def get_med_info(pat_id):
 
 
 
-# 用chartno獲取所有active order
-def get_activeorder_all(chartno):
+# 用chartno獲取所有active order(nis分類使用版)
+def get_activeorder(chartno,inpno,ordertype):
     rs = None
     try:
         URI = "{0}/slight/api/nis/inp/ActiveOrds".format(Config.K8S_URL)
         req_data = {
             # "ChartNo": '0682118',
             "ChartNo": chartno,
-            "InpNo":"",
-            "OrddRid":""
+            "InpNo": inpno,
+            "OrddRid":"",
+            "OrderType": ordertype
         }
         headers={ 'Content-Type': 'application/json'}
         content = call_api(uri= URI, payload= json.dumps(req_data), headers= headers)
         if(not isNone(content) ):
             rs = json.loads(content)
-            # majorclass分類對應
-            majorclass_mapping = {
-            '0': '口服',
-            '00': '針劑',
-            '01': '外用',
-            '02': '護理',
-            '03': '病檢',
-            '04': '其他'
-            }
-
-        # 為每個order添加 key-value,['MajorclassText']:'口服'
-        for order in rs['data']:
-            majorclass = order['MajorClass']
-            order['MajorclassText'] = majorclass_mapping.get(majorclass, '')
     except Exception as e: 
-        logger.error('get_activeorder_all: {0}'.format(str(e))) 
+        logger.error('get_user_info: {0}'.format(str(e))) 
         return None
     return rs
 
-# 用majorclass獲得分類active order
-def get_activeorder_byClass(majorclass,ddl):
-    rs = ddl
-    if rs and 'data' in rs and majorclass is not None:
-        rs['data'] = [item for item in rs['data'] if item['MajorClass'] == majorclass]
-    return rs
-# rs =  {
-#      'status': True,
-#      'message': '',
-#      'data': [{
-#          'NowStationNo': '05B',
-#          'NowBedNo': '5251',
-#          'InpNo': '00386619',
-#          'ChartNo': '06758676',
-#          'ChartSeq': 0,
-#          'SeqNo': '2',
-#          'CodeSeq': 11,
-#          'CodeNo': '600720',
-#          'MajorClass': '02',
-#          'OrddTxt': 'GRAM STAIN＋AEROBIC CULTURE (組套) \r\n: Specimen: Sputum/Bacteria\r\n: Gram stain, Aerobic Culture\r\n: if get sputum out',
-#          'CreDate': '20230911',
-#          'CreTime': '1456',
-#          'CreId': '003074',
-#          'CreUserName': '丁熙安',
-#          'EndTime': None,
-#          'TotQty': 1.0,
-#          'BeginDateTimeStr': '2023-09-11 14:48',
-#          'MajorclassText': '護理'
-#      }],
-#  }
 
+
+# 獲取某病人所有active order的majorname list(top分類使用)
+def get_majorname_list(inpno):
+    # 发送 GET 请求
+    URL = "{0}/topapi/note/doc_order_inp/".format(Config.K8S_URL)+inpno
+    response = requests.get(URL)
+    if response.status_code == 200:
+        data = response.json()
+
+        # 创建一个空集合来存储 "MAJOR_NAME" 的值，并自动处理重复的值
+        majorname_set = set()
+
+        # 遍历数据
+        for item in data:
+            # 获取 "majorname_NAME" 的值
+            major_name = item["MAJOR_NAME"]
+
+            # 将 "MAJOR_NAME" 添加到集合中
+            majorname_set.add(major_name)
+
+        # 如果你需要一个列表，可以将集合转换为列表
+        majorname_list = list(majorname_set)
+
+        return majorname_list
+    else:
+        print(f"请求失败，状态码：{response.status_code}")
+        return None
+    
+
+
+# 輸入majorname(ordertype中文)可獲得active order(同top分類,slight api)
+def get_activeorder_by_type(inpno,ordertype):
+    rs = None
+    try:
+        URI = "http://localhost:5000/slight/api/nis/inp/GetOrdbyType"
+        req_data = {
+            "InpNo": inpno,
+            "OrderType": ordertype
+        }
+        headers={ 'Content-Type': 'application/json'}
+        content = call_api(uri= URI, payload= json.dumps(req_data), headers= headers)
+        if(not isNone(content) ):
+            rs = json.loads(content)
+    except Exception as e:
+        logger.error('get_activeorder_by_type: {0}'.format(str(e))) 
+        return None
+    return rs['data']
+
+
+def get_orderRecent(inpno):
+    rs = None
+    try:
+        URI = "{0}/topapi/note/doc_order_inpexe_all/".format(Config.K8S_URL)+inpno
+        headers = { 'Content-Type': 'application/json'}
+        response = requests.get(URI, headers=headers)
+        content = response.content
+        if content:
+            rs = json.loads(content)
+    except Exception as e:
+        logger.error('get_activeorder_by_type: {0}'.format(str(e))) 
+        return None
+    return rs
