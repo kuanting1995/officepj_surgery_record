@@ -56,7 +56,8 @@ spec:
               value: "https://napi.kfsyscc.org"
             - name: FK_IT_CHANNEL_ACCESS_TOKEN
               value: "eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ0eXBlIjowLCJleHAiOjAsImlkIjoyfQ.K2ZsjFzSHGQTeUHPaMAZ2h59nWNpSHbgPiEPv6pVNG0"
-          
+            - name: FK_IPB_CHANNEL_ACCESS_TOKEN
+              value: "eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ0eXBlIjowLCJleHAiOjAsImlkIjoyOX0.xTCDEgjC5pKgUhSKRgZJgQHUhPWUsBZTm1g2NEKZ2wU"
           ports:
             - containerPort: 5000
           volumeMounts:

@@ -6,15 +6,15 @@ from ..route import api_route
 from  settings import Config
 from lib.Checker import isNationalIdentificationNumberValid, is8Num, is4Num
 from hooks.utils import get_med_info,get_majorname_list,get_activeorder_by_type,get_orderRecent
-from hooks.makemsg import makeFlexMsg_PatBaseInfo, makeFlexMsg_CategoryOrder,makeFlexMsg_OrderDetails,makeFlexMsg_OrderDetailsRecent
-from hooks.utils_teamplus import send_message, sendFlexMsgToUser ,updateFlexFooter
+from hooks.ipb.makemsg import makeFlexMsg_PatBaseInfo, makeFlexMsg_CategoryOrder,makeFlexMsg_OrderDetails,makeFlexMsg_OrderDetailsRecent
+from hooks.ipb.utils_teamplus import send_message, sendFlexMsgToUser
 import uuid
 from urllib.parse import parse_qs
 
-# demo:https://ing2.kfsyscc.org/hookap/hooks/it/webhook 
-# 地端測試：http://172.21.42.22:5000/hookap/hooks/it/webhook
+# demo:https://ing2.kfsyscc.org/hookap/hooks/ipb/webhook 
+# 地端測試：http://172.21.42.22:5000/hookap/hooks/ipb/webhook
 
-CHANNEL_ACCESS_TOKEN = Config.IT_CHANNEL_ACCESS_TOKEN
+CHANNEL_ACCESS_TOKEN = Config.IPB_CHANNEL_ACCESS_TOKEN
 
 @api_route(rule = '', params=None ,methods=['POST', 'GET'])
 def _webhook():
@@ -55,9 +55,11 @@ class ChatBotFSM:
                     obj["messageSN"] = msg['MessageSN']
                     inpno = rs['data']['INP_NO']
                     Majorname_list = get_majorname_list(inpno)
-                    obj["Majorname_list"] = Majorname_list
+                     # 依照首字筆劃做排序:
+                    sorted_Majorname_list = sorted(Majorname_list,key=lambda x: x[0])
+                    obj["Majorname_list"] = sorted_Majorname_list
                     obj["collection"] = []  
-                    for i, majorname in enumerate(Majorname_list, start=3):
+                    for i, majorname in enumerate(sorted_Majorname_list, start=3):
                         obj["collection"].append({'_id': str(i), 'majorname': majorname})
                     # 存儲data（pat_info->obj,Majorname_list,collection）到mongodb
                     save_to_db(obj)
@@ -158,12 +160,12 @@ class ChatBotFSM:
 bot = ChatBotFSM()
 
 
-#儲存資料至mongodb: https://emr.kfsyscc.org/madmin/db/teamplus_it/
+#儲存資料至mongodb: https://emr.kfsyscc.org/madmin/db/teamplus_ipb/
 def save_to_db(obj):
 
-    url = "https://emr.kfsyscc.org/mongo/teamplus_it/requests"
+    url = "https://emr.kfsyscc.org/mongo/teamplus_ipb/requests"
     payload = {
-        "progress_name": "資訊部服務頻道通知",
+        "progress_name": "住院病人資訊",
         "messageSN": obj["messageSN"],
         "obj":obj,
         "_id": obj["_id"]
@@ -172,7 +174,7 @@ def save_to_db(obj):
     
     
 def load_from_db(a_id):
-    url = "https://emr.kfsyscc.org/mongo/teamplus_it/requests/" + a_id
+    url = "https://emr.kfsyscc.org/mongo/teamplus_ipb/requests/" + a_id
     x = requests.get(url)
     return x.json()
 
