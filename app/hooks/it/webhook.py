@@ -30,7 +30,7 @@ class ChatBotFSM:
         # postback_handlers為所有按鈕與其對應不同行為
         self.postback_handlers = {
             '0': self.make_postback_handler(makeFlexMsg_CategoryOrder),
-            '13': self.make_orderRecent_handler('最新執行'),
+            '20': self.make_orderRecent_handler('最新執行'),
         }
     # 判斷事件類型並執行自動回覆：user輸入文字訊息=>message,user點擊btn=>postback
     def handle_event(self, event_type, data):
@@ -56,11 +56,10 @@ class ChatBotFSM:
                     inpno = rs['data']['INP_NO']
                     Majorname_list = get_majorname_list(inpno)
                     obj["Majorname_list"] = Majorname_list
-                    # 存儲data（pat_info,Majorname_list）到mongodb
                     obj["collection"] = []  
                     for i, majorname in enumerate(Majorname_list, start=3):
                         obj["collection"].append({'_id': str(i), 'majorname': majorname})
-                    # print('collection', obj["collection"])
+                    # 存儲data（pat_info->obj,Majorname_list,collection）到mongodb
                     save_to_db(obj)
                 except Exception as e:
                     print(str(e))
@@ -82,13 +81,13 @@ class ChatBotFSM:
                 handler(_id,data)
             else:
                 send_message(user, '無法判斷btn行為')
-        elif postback_data == '13':
+        elif postback_data == '20':
             handler = self.postback_handlers.get(postback_data)
             if handler:
                 handler(_id,data)
             else:
                 send_message(user, '無法判斷btn行為')
-        #處理可能產生btn (value1~12)  ex:'1': self.make_orderRecent_handler('口服'),
+        #點擊btn1~12, 產生btn (value1~12的執行：postback_handlers)  ex:'1': self.make_orderbyclass_handler('口服')
         else:
             obj = load_from_db(_id)
             doc = obj['obj']['collection']
@@ -105,7 +104,7 @@ class ChatBotFSM:
             else:
                 send_message(user, '無法判斷btn行為')
             
-    # 點擊btn0後行為,製作msg:flexmsg,並傳送flex:handler()
+    # 點擊btn0後行為,製作msg(病人基本資料+3btn):flexmsg,並傳送flex:handler()
     def make_postback_handler(self,flexmsg):
         def handler(_id,data):
             obj = load_from_db(_id)
@@ -115,7 +114,7 @@ class ChatBotFSM:
             sendFlexMsgToUser(user,flexmsg(_id, obj, Majorname_list))
         return handler
     
-    # 點擊btn1~12後行為
+    # 點擊btn1~12後行為,製作orderdetails
     def make_orderbyclass_handler(self, majorname):
         def handler(_id,data):
             obj = load_from_db(_id)
@@ -136,7 +135,7 @@ class ChatBotFSM:
 
         return handler  
     
-    # 點擊btn13後行為
+    # 點擊btn13後行為,製作orderdetails
     def make_orderRecent_handler(self, majorname):
         def handler(_id,data):
             obj = load_from_db(_id)
@@ -176,3 +175,34 @@ def load_from_db(a_id):
     url = "https://emr.kfsyscc.org/mongo/teamplus_it/requests/" + a_id
     x = requests.get(url)
     return x.json()
+
+
+# "Majorname_list": [
+#             "口服",
+#             "針劑",
+#             "點滴",
+#             "病檢",
+#             "護理"
+#         ],
+#         "collection": [
+#             {
+#                 "_id": "3",
+#                 "majorname": "口服"
+#             },
+#             {
+#                 "_id": "4",
+#                 "majorname": "針劑"
+#             },
+#             {
+#                 "_id": "5",
+#                 "majorname": "點滴"
+#             },
+#             {
+#                 "_id": "6",
+#                 "majorname": "病檢"
+#             },
+#             {
+#                 "_id": "7",
+#                 "majorname": "護理"
+#             }
+#         ]

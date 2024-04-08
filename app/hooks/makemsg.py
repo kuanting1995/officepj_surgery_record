@@ -81,7 +81,7 @@ def makeFlexMsg_CategoryOrder(_id, obj, Majorname_list):
         "style": "primary",
         "bgcolor": "#2C5062",
         "displayText": f'您已查詢"最新執行" active order',
-        "data": f"value=13&id={_id}"}],
+        "data": f"value=20&id={_id}"}],
         "borderColor": "#DCDCDC",
 		"paddingStart": 10,
 		"paddingEnd": 10

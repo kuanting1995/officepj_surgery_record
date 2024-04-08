@@ -25,7 +25,7 @@ class Config(object):
 
 
 #hooks token
-    IT_CHANNEL_ACCESS_TOKEN = os.getenv('FK_IT_CHANNEL_ACCESS_TOKEN', 'eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ0eXBlIjowLCJleHAiOjAsImlkIjoyfQ.K2ZsjFzSHGQTeUHPaMAZ2h59nWNpSHbgPiEPv6pVNG0')
+    IT_CHANNEL_ACCESS_TOKEN = os.getenv('FK_IT_CHANNEL_ACCESS_TOKEN', 'eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ0eXBlIjowLCJleHAiOjAsImlkIjoyOX0.zL2CDy8PQ-JeWpJVK-Z-3MO3dSryhL28Vq2rmbLog6Y')
 
 # SYSCC
     SYS_AES_KEY = os.getenv('FK_SYS_AES_KEY', 'KfSyScC')
