@@ -136,7 +136,8 @@ def get_majorname_list(inpno):
 def get_activeorder_by_type(inpno,ordertype):
     rs = None
     try:
-        URI = "http://localhost:5000/slight/api/nis/inp/GetOrdbyType"
+        # URI = "http://localhost:5000/slight/api/nis/inp/GetOrdbyType" +>測試用
+        URI = "{0}/slight/api/nis/inp/GetOrdbyType".format(Config.K8S_URL)
         req_data = {
             "InpNo": inpno,
             "OrderType": ordertype
