@@ -9,7 +9,6 @@ from datetime import datetime
 highchart-server未提供圖片binary,要先用tempfile存並轉binary,再轉成base64才能用json格式傳送
 """
 
-
 def create_VitalSignChart(data):
 
     # 格式日期不要年份 04/15 12:00
@@ -201,7 +200,7 @@ def create_VitalSignChart(data):
         json.dump(options, f)
 
     # 圖檔名稱：
-    output_file = "linechart_{:%Y_%m_%d_%H_%M_%S}.png".format(datetime.now())
+    output_file = "linechart_{:%Y_%m_%d_%H_%M}.png".format(datetime.now())
     
     # 使用 highcharts-export-server 創建chart
     subprocess.run([
@@ -214,6 +213,9 @@ def create_VitalSignChart(data):
     with open(output_file, "rb") as f:
         image_data = f.read()
     
+    # 刪除創建的圖片
+    os.remove(output_file)
+
     # 關閉 file descriptor
     os.close(temp_fd)
 
