@@ -1,12 +1,11 @@
 
 from flask import Flask, request, jsonify
 import requests
-import json
 from ..route import api_route 
 from  settings import Config
 from lib.Checker import isNationalIdentificationNumberValid, is8Num, is4Num
-from hooks.utils import get_med_info,get_majorname_list,get_activeorder_by_type,get_orderRecent,get_vitalsignData
-from hooks.ipb.makemsg import makeFlexMsg_PatBaseInfo, makeFlexMsg_CategoryOrder,makeFlexMsg_OrderDetails,makeFlexMsg_OrderDetailsRecent,makeFlexMsg_VitalSignChart
+from hooks.utils import get_med_info,get_vitalsignData,get_activeorder_all
+from hooks.ipb.makemsg import makeFlexMsg_PatBaseInfo, makeFlexMsg_CategoryOrder,makeFlexMsg_OrderDetails,makeFlexMsg_VitalSignChart
 from hooks.ipb.utils_teamplus import send_message, sendFlexMsgToUser, upload_image
 from hooks.ipb.make_linechart import create_VitalSignChart
 import uuid
@@ -29,11 +28,28 @@ def _webhook():
 # 聊天訊息處理
 class ChatBotFSM:
     def __init__(self):
+        self.order_type_dict = {
+            'INJ': "點滴/針劑",
+            'OP': "口服/外用",
+            'TR': "醫療指示",
+            'ESAM': "檢驗檢查",
+            'CH': "化療",
+            'PCA': "PCA",
+            'MBD': "出院醫囑",
+            '': "全部"
+        }
         # postback_handlers為所有按鈕與其對應不同行為
         self.postback_handlers = {
             '0': self.make_postback_handler(makeFlexMsg_CategoryOrder),
             '1': self.make_vitalsign_handler(),
-            '20': self.make_orderRecent_handler('最新執行'),
+            '3': self.make_orderbyclass_handler('INJ'),
+            '4': self.make_orderbyclass_handler('OP'),
+            '5': self.make_orderbyclass_handler('TR'),
+            '6': self.make_orderbyclass_handler('ESAM'),
+            '7': self.make_orderbyclass_handler('CH'),
+            '8': self.make_orderbyclass_handler('PCA'),
+            '9': self.make_orderbyclass_handler('MBD'),
+            '10': self.make_orderbyclass_handler(''),
         }
     # 判斷事件類型並執行自動回覆：user輸入文字訊息=>message,user點擊btn=>postback
     def handle_event(self, event_type, data):
@@ -57,15 +73,6 @@ class ChatBotFSM:
                     PatBaseInfomsg = makeFlexMsg_PatBaseInfo(_id,obj)
                     msg = sendFlexMsgToUser(user, PatBaseInfomsg)
                     obj["messageSN"] = msg['MessageSN']
-                    inpno = rs['data']['INP_NO']
-                    Majorname_list = get_majorname_list(inpno)
-                     # 依照首字筆劃做排序:
-                    sorted_Majorname_list = sorted(Majorname_list,key=lambda x: x[0])
-                    obj["Majorname_list"] = sorted_Majorname_list
-                    obj["collection"] = []  
-                    for i, majorname in enumerate(sorted_Majorname_list, start=3):
-                        obj["collection"].append({'_id': str(i), 'majorname': majorname})
-                    # 存儲data（pat_info->obj,Majorname_list,collection）到mongodb
                     save_to_db(obj)
                 except Exception as e:
                     print(str(e))
@@ -103,15 +110,7 @@ class ChatBotFSM:
         #點擊btn1~12, 產生btn (value1~12的執行：postback_handlers)  ex:'1': self.make_orderbyclass_handler('口服')
         else:
             obj = load_from_db(_id)
-            doc = obj['obj']['collection']
-            handler_mapping = {}
-            if doc:
-                for item in doc:
-                    majorname = item['majorname']
-                    handler = self.make_orderbyclass_handler(majorname)
-                    handler_mapping[item['_id']] = handler
-
-            handler = handler_mapping.get(postback_data)
+            handler = self.postback_handlers.get(postback_data)
             if handler:
                 handler(_id, data)
             else:
@@ -122,56 +121,39 @@ class ChatBotFSM:
         def handler(_id,data):
             obj = load_from_db(_id)
             user = data['events'][0]['source']['userId']
-            Majorname_list = obj['obj']['Majorname_list']
-            obj = obj['obj']
-            sendFlexMsgToUser(user,flexmsg(_id, obj, Majorname_list))
+            # print('obj',obj)
+            sendFlexMsgToUser(user, flexmsg(_id,obj))
         return handler
     
-    # 點擊btn1~12後行為,製作orderdetails
-    def make_orderbyclass_handler(self, majorname):
+    # 點擊btn3~10後行為,製作orderdetails
+    def make_orderbyclass_handler(self, ordertype):
         def handler(_id,data):
-            obj = load_from_db(_id)
-            # print('obj',obj)
             user = data['events'][0]['source']['userId']
+            obj = load_from_db(_id)
+            chartno = obj['obj']['CHART_NO']
+            inpno = obj['obj']['INP_NO']
             patname = obj['obj']['PAT_NAME']
             bedno = obj['obj']['NOW_BEDNO']
-            inpno = obj['obj']['INP_NO']
-            print('inpno',inpno)
-            print('majorname',majorname)
-            activeorder_by_type =get_activeorder_by_type(inpno,majorname)
-            if not activeorder_by_type:
+            # print('last msg',obj)
+            # 獲取ordertype對應中文值：
+            ordertype_value = self.order_type_dict.get(ordertype,ordertype)
+            rs = get_activeorder_all(chartno,inpno,ordertype)
+            order_data = rs['data']
+            # print('order data',order_data)
+            if not order_data:
                 send_message(user, "此active order分類尚無資料")
                 return 
             else:
-                msg = makeFlexMsg_OrderDetails(patname,bedno,majorname,activeorder_by_type)
+                msg = makeFlexMsg_OrderDetails(patname,bedno,ordertype_value ,order_data)
+                # print('msg', msg)
                 sendFlexMsgToUser(user, msg)
 
         return handler  
-    
-    # 點擊btn13後行為,製作orderdetails
-    def make_orderRecent_handler(self, majorname):
-        def handler(_id,data):
-            
-            obj = load_from_db(_id)
-            user = data['events'][0]['source']['userId']
-            patname = obj['obj']['PAT_NAME']
-            bedno = obj['obj']['NOW_BEDNO']
-            inpno = obj['obj']['INP_NO']
-            orderRecent =get_orderRecent(inpno)
-            
-            if not orderRecent:
-                send_message(user, "此active order分類尚無資料")
-                return 
-            else:
-                msg = makeFlexMsg_OrderDetailsRecent(patname,bedno,majorname ,orderRecent)
-                sendFlexMsgToUser(user, msg)
-
-        return handler  
+     
     # 點擊btn1 回傳病人生命徵象折線圖
     def make_vitalsign_handler(self):
         def handler(_id,data):
             user = data['events'][0]['source']['userId']
-            print("你好")
             obj = load_from_db(_id)
             chartno = obj['obj']['CHART_NO']
             patname = obj['obj']['PAT_NAME']

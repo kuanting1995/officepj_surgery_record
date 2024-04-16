@@ -50,143 +50,7 @@ def makeFlexMsg_VitalSignChart(patname,imageid):
     return msg
 
 # 製作分類過的active order列表
-def makeFlexMsg_OrderDetails(patname, bedno, majorname, activeorder_by_type):
-    msg = {
-        "type": "flex",
-        "contents": {
-            "body": [
-                {
-                    "type": "bodycontainer",
-                    "contents": [
-                        {
-                            "type": "text",
-                            "text": f"病人:{patname} ",
-                            "align": "left",
-                            "fontColor": "#373737",
-                            "fontSize": 18,
-                            "fontStyle": "normal",
-                            "fontWeight": 900,
-                            "marginTop": 5
-                        },
-                        {
-                            "type": "text",
-                            "text": f"床號:{bedno}",
-                            "align": "right",
-                            "fontColor": "#373737",
-                            "fontSize": 16,
-                            "fontStyle": "normal",
-                            "fontWeight": 600,
-                            "marginTop": 5
-                        }
-                    ],
-                    "borderColor": "#DCDCDC",
-                    "paddingStart": 10,
-                    "paddingEnd": 10
-                },
-                {
-                    "type": "bodycontainer",
-                    "contents": [
-                        {
-                            "type": "text",
-                            "text": f"< {majorname} active order >",
-                            "align": "left",
-                            "fontColor": "#373737",
-                            "fontSize": 18,
-                            "fontStyle": "normal",
-                            "fontWeight": 900,
-                            "marginTop": 10
-                        }
-                    ],
-                    "borderColor": "#DCDCDC",
-                    "paddingTop": 0,
-                    "paddingBottom": 0,
-                    "paddingStart": 10,
-                    "paddingEnd": 10
-                },
-                {
-                    "type": "separator",
-                    "height": 1,
-                    "bgcolor": "#DCDCDC"
-                }
-            ]
-        }
-    }
-    
-    def get_datetime_str(order):
-        # print(order)
-        beg_datetime = datetime.strptime(order['BEG_DATE'] + order['BEG_TIME'] + '00', '%Y/%m/%d%H%M%S')
-        return beg_datetime.strftime('%Y-%m-%d %H:%M')
-
-    sorted_orders = sorted(activeorder_by_type, key=get_datetime_str,reverse=True)
-
-    for order_data in sorted_orders:
-        date_container = {
-            "type": "bodycontainer",
-            "contents": [
-                {
-                    "type": "text",
-                    "text": "日期:",
-                    "align": "left",
-                    "fontColor": "#373737",
-                    "fontSize": 15,
-                    "fontStyle": "normal",
-                    "fontWeight": 400,
-                    "marginTop": 10
-                },
-                {
-                    "type": "text",
-                    "text": get_datetime_str(order_data),
-                    "flex": 3,
-                    "align": "left",
-                    "fontColor": "#373737",
-                    "fontSize": 15,
-                    "fontStyle": "normal",
-                    "fontWeight": 400,
-                    "marginTop": 10
-                }
-            ],
-            "borderColor": "#DCDCDC",
-            "paddingStart": 10,
-            "paddingEnd": 10
-        }
-
-        text_container = {
-            "type": "bodycontainer",
-            "contents": [
-                {
-                    "type": "text",
-                    "text": "orddtxt:",
-                    "align": "left",
-                    "fontColor": "#373737",
-                    "fontSize": 15,
-                    "fontStyle": "normal",
-                    "fontWeight": 400,
-                    "marginTop": 10
-                },
-                {
-                    "type": "text",
-                    "text": order_data["ORDD_TXT"],
-                    "flex": 3,
-                    "align": "left",
-                    "fontColor": "#373737",
-                    "fontSize": 15,
-                    "fontStyle": "normal",
-                    "fontWeight": 400,
-                    "marginTop": 10
-                }
-            ],
-            "bgcolor": "#bdc9d4",
-            "borderColor": "#DCDCDC",
-            "paddingStart": 10,
-            "paddingEnd": 10
-        }
-
-        msg['contents']['body'].extend([date_container, text_container])
-
-    return msg
-
-# 最新執行 active order列表
-def makeFlexMsg_OrderDetailsRecent(patname,bedno,ordertype_value ,data):
+def makeFlexMsg_OrderDetails(patname,bedno,ordertype_value ,data):
     msg = {
 	"type": "flex",
 	"contents": {
@@ -248,9 +112,7 @@ def makeFlexMsg_OrderDetailsRecent(patname,bedno,ordertype_value ,data):
 	}
 }
     # 將active_order_data 先做日期排序：
-    current_year = datetime.now().year
-    sorted_orders = sorted(data, key=lambda order: datetime.strptime(str(current_year) + "/" + order["BEG_ORDER"].split('\n')[0], '%Y/%m/%d %H:%M'),reverse=True)
-
+    sorted_orders = sorted(data , key=lambda order: order["BeginDateTimeStr"], reverse=True)
     for order_data in sorted_orders:
         date_container = {
             "type": "bodycontainer",
@@ -267,7 +129,7 @@ def makeFlexMsg_OrderDetailsRecent(patname,bedno,ordertype_value ,data):
                 },
                 {
                     "type": "text",
-                    "text":  str(current_year) + "/" + order_data["BEG_ORDER"].split('\n')[0],
+                    "text": order_data["BeginDateTimeStr"],
                     "flex": 3,
                     "align": "left",
                     "fontColor": "#373737",
@@ -297,7 +159,7 @@ def makeFlexMsg_OrderDetailsRecent(patname,bedno,ordertype_value ,data):
                 },
                 {
                     "type": "text",
-                    "text": order_data["NAME_ORDER"],
+                    "text": order_data["OrddTxt"],
                     "flex": 3,
                     "align": "left",
                     "fontColor": "#373737",
@@ -317,92 +179,148 @@ def makeFlexMsg_OrderDetailsRecent(patname,bedno,ordertype_value ,data):
 
     return msg
 
-
-# active order分類按鈕
-def makeFlexMsg_CategoryOrder(_id, obj, Majorname_list):
+# active order分類按鈕 x8
+def makeFlexMsg_CategoryOrder(_id,obj):
     msg = {
         "type": "flex",
         "contents": {
             "body": [
-                {
-                    "type": "bodycontainer",
-                    "contents": [
-                        {
-                            "type": "text",
-                            "text": f"病人{obj['PAT_NAME']} active order",
-                            "align": "left",
-                            "fontColor": "#373737",
-                            "fontSize": 18,
-                            "fontStyle": "normal",
-                            "fontWeight": 900,
-                            "marginTop": 10
-                        }
-                    ],
-                    "borderColor": "#DCDCDC",
-                    "paddingStart": 10,
-                    "paddingEnd": 10
-                },
-                {
-                    "type": "bodycontainer",
-                    "contents": [
-                        {
-                            "type": "text",
-                            "text": "分類查詢:",
-                            "align": "left",
-                            "fontColor": "#373737",
-                            "fontSize": 15,
-                            "fontStyle": "normal",
-                            "fontWeight": 500,
-                            "marginTop": 10
-                        }
-                    ],
-                    "borderColor": "#DCDCDC",
-                    "paddingStart": 10,
-                    "paddingEnd": 10
-                },
-                {
-                    "type": "separator",
-                    "height": 1,
-                    "bgcolor": "#DCDCDC"
-                }
-            ],
-            "footer": []
+			{
+				"type": "bodycontainer",
+				"contents": [
+					{
+						"type": "text",
+						"text": "病人" + obj['obj']['PAT_NAME'],
+						"align": "left",
+						"fontColor": "#373737",
+						"fontSize": 18,
+						"fontStyle": "normal",
+						"fontWeight": 900,
+						"marginTop": 10
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingStart": 10,
+				"paddingEnd": 10
+			},
+			{
+				"type": "bodycontainer",
+				"contents": [
+					{
+						"type": "text",
+						"text": "分類查詢active order:",
+						"align": "left",
+						"fontColor": "#373737",
+						"fontSize": 16,
+						"fontStyle": "normal",
+						"fontWeight": 600,
+						"marginTop": 10
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingTop": 0,
+				"paddingBottom": 0,
+				"paddingStart": 10,
+				"paddingEnd": 10
+			},
+			{
+				"type": "separator",
+				"height": 1,
+				"bgcolor": "#DCDCDC"
+			}
+		],
+            "footer": [
+			{
+				"type": "footercontainer",
+				"contents": [
+					{
+						"type": "postbackbutton",
+						"text": "點滴/針劑",
+						"style": "primary",
+						"bgcolor": "#2C5062",
+                        "displayText": '已查詢"點滴/針劑"active order',
+                        "data": "value=3&id="+_id
+					},
+					{
+						"type": "postbackbutton",
+						"text": "口服/外用",
+						"style": "primary",
+						"bgcolor": "#99AAB6",
+                        "displayText": '已查詢"口服/外用"active order',
+                        "data": "value=4&id="+_id
+					},
+					{
+						"type": "postbackbutton",
+						"text": "醫療指示",
+						"style": "primary",
+						"bgcolor": "#6A8391",
+                        "displayText": '已查詢"醫療指示"active order',
+                        "data": "value=5&id="+_id
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingStart": 10,
+				"paddingEnd": 10
+			},
+			{
+				"type": "footercontainer",
+				"contents": [
+					{
+						"type": "postbackbutton",
+						"text": "檢驗檢查",
+						"style": "primary",
+						"bgcolor": "#6A8391",
+                        "displayText": '已查詢"檢驗檢查"active order',
+                        "data": "value=6&id="+_id
+					},
+					{
+						"type": "postbackbutton",
+						"text": "化療",
+						"style": "primary",
+						"bgcolor": "#2C5062",
+                        "displayText": '已查詢"化療"active order',
+                        "data": "value=7&id="+_id
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingStart": 10,
+				"paddingEnd": 10
+			},
+   			{
+				"type": "footercontainer",
+				"contents": [
+					{
+						"type": "postbackbutton",
+						"text": "PCA",
+						"style": "primary",
+						"bgcolor": "#2C5062",
+                        "displayText": '已查詢"PCA"active order',
+                        "data": "value=8&id="+_id
+					},
+					{
+						"type": "postbackbutton",
+						"text": "出院醫囑",
+						"style": "primary",
+						"bgcolor": "#99AAB6",
+                        "displayText": '已查詢"出院醫囑"active order',
+                        "data": "value=9&id="+_id
+					},
+					{
+						"type": "postbackbutton",
+						"text": "全部",
+						"style": "primary",
+						"bgcolor": "#6A8391",
+                        "displayText": '已查詢"全部"active order',
+                        "data": "value=10&id="+_id
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingStart": 10,
+				"paddingEnd": 10
+			}
+		]
         }
     }
-
-    for i, majorname in enumerate(Majorname_list, start=1):
-        if i % 5 == 1:  # Start a new footercontainer every 5 items
-            msg['contents']['footer'].append({
-                "type": "footercontainer",
-                "contents": [],
-                "borderColor": "#DCDCDC",
-                "paddingStart": 10,
-                "paddingEnd": 10
-            })
-
-        msg['contents']['footer'][-1]['contents'].append({
-            "type": "postbackbutton",
-            "text": majorname,
-            "style": "primary",
-            "bgcolor": "#99AAB6",
-            "displayText": f"您已查詢'{majorname}' active order",
-            "data": f"value={i+2}&id={_id}"
-        })
-
-    # Add the special element to the last footercontainer
-    msg['contents']['footer'].append({
-        "type": "footercontainer",
-        "contents": [{"type": "postbackbutton",
-        "text": "最新執行",
-        "style": "primary",
-        "bgcolor": "#2C5062",
-        "displayText": f'您已查詢"最新執行" active order',
-        "data": f"value=20&id={_id}"}],
-        "borderColor": "#DCDCDC",
-		"paddingStart": 10,
-		"paddingEnd": 10
-    })
-
     return msg
 
 

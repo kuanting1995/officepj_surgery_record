@@ -72,7 +72,7 @@ def get_majorname_list(inpno):
         return None
     
     
-# 輸入majorname(ordertype中文)可獲得active order(同top分類,slight api)
+# 輸入majorname(ordertype中文)可獲得active order(top分類)
 def get_activeorder_by_type(inpno,ordertype):
     rs = None
     try:
@@ -90,7 +90,7 @@ def get_activeorder_by_type(inpno,ordertype):
         return None
     return rs['data']
 
-
+#最新執行 active (top分類)
 def get_orderRecent(inpno):
     rs = None
     try:
@@ -105,12 +105,32 @@ def get_orderRecent(inpno):
         return None
     return rs
 
+# 用chartno獲取所有active order(NIS分類)
+def get_activeorder_all(chartno,inpno,ordertype):
+    rs = None
+    try:
+        URI = "{0}/slight/api/nis/inp/ActiveOrds".format(Config.K8S_URL)
+        req_data = {
+            # "ChartNo": '0682118',
+            "ChartNo": chartno,
+            "InpNo": inpno,
+            "OrddRid":"",
+            "OrderType": ordertype
+        }
+        headers={ 'Content-Type': 'application/json'}
+        content = call_api(uri= URI, payload= json.dumps(req_data), headers= headers)
+        if(not isNone(content) ):
+            rs = json.loads(content)
+    except Exception as e: 
+        logger.error('get_user_info: {0}'.format(str(e))) 
+        return None
+    return rs
 
 def get_vitalsignData(chartno,searchdate,intervaldays):
     rs = None
     try:
-        URI = "http://127.0.0.1:5000/slight/api/teamplus/GetVitalInp"
-        # URI = "{0}/slight/api/nis/inp/GetOrdbyType".format(Config.K8S_URL) =>正式用
+        # URI = "http://127.0.0.1:5000/slight/api/teamplus/GetVitalInp"
+        URI = "{0}/slight/api/nis/inp/GetOrdbyType".format(Config.K8S_URL)
         req_data = {
             "Chartno": chartno,
             "SearchDate": searchdate,
