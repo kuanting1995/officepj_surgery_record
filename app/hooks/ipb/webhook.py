@@ -5,14 +5,16 @@ import json
 from ..route import api_route 
 from  settings import Config
 from lib.Checker import isNationalIdentificationNumberValid, is8Num, is4Num
-from hooks.utils import get_med_info,get_majorname_list,get_activeorder_by_type,get_orderRecent
-from hooks.ipb.makemsg import makeFlexMsg_PatBaseInfo, makeFlexMsg_CategoryOrder,makeFlexMsg_OrderDetails,makeFlexMsg_OrderDetailsRecent
-from hooks.ipb.utils_teamplus import send_message, sendFlexMsgToUser
+from hooks.utils import get_med_info,get_majorname_list,get_activeorder_by_type,get_orderRecent,get_vitalsignData
+from hooks.ipb.makemsg import makeFlexMsg_PatBaseInfo, makeFlexMsg_CategoryOrder,makeFlexMsg_OrderDetails,makeFlexMsg_OrderDetailsRecent,makeFlexMsg_VitalSignChart
+from hooks.ipb.utils_teamplus import send_message, sendFlexMsgToUser, upload_image
+from hooks.ipb.make_linechart import create_VitalSignChart
 import uuid
 from urllib.parse import parse_qs
+from datetime import datetime
 
 # demo:https://ing2.kfsyscc.org/hookap/hooks/ipb/webhook 
-# 地端測試：http://172.21.42.22:5000/hookap/hooks/ipb/webhook
+# 地端測試：http://172.21.42.22:5001/hookap/hooks/ipb/webhook
 
 CHANNEL_ACCESS_TOKEN = Config.IPB_CHANNEL_ACCESS_TOKEN
 
@@ -30,6 +32,7 @@ class ChatBotFSM:
         # postback_handlers為所有按鈕與其對應不同行為
         self.postback_handlers = {
             '0': self.make_postback_handler(makeFlexMsg_CategoryOrder),
+            '1': self.make_vitalsign_handler(),
             '20': self.make_orderRecent_handler('最新執行'),
         }
     # 判斷事件類型並執行自動回覆：user輸入文字訊息=>message,user點擊btn=>postback
@@ -46,6 +49,7 @@ class ChatBotFSM:
             if isNationalIdentificationNumberValid(req_text) or is8Num(req_text) or is4Num(req_text):
                 try:
                     rs = get_med_info(req_text)
+                    # print('patinfo',rs)
                     obj = rs['data']
                     # 隨機產生uuid碼
                     obj["_id"]=str(uuid.uuid4())
@@ -68,6 +72,7 @@ class ChatBotFSM:
                     send_message(user, '查無病人資料')
             else:
                 send_message(user,"資料或格式錯誤,請重新輸入")
+    
     # 回覆user點擊btn
     def handle_postback_event(self,data):
         # data={'destination': 2, 'events': [{'type': 'postback', 'timestamp': 1711537555, 'source': {'type': 'user', 'userId': 'clairelu'}, 'data': 'value=0&id=a1e775d4-1594-4a02-8899-e6c958ffa89d'}]}
@@ -85,6 +90,12 @@ class ChatBotFSM:
                 send_message(user, '無法判斷btn行為')
         elif postback_data == '20':
             handler = self.postback_handlers.get(postback_data)
+            if handler:
+                handler(_id,data)
+            else:
+                send_message(user, '無法判斷btn行為')
+        elif postback_data == '1':
+            handler =self.postback_handlers.get(postback_data)
             if handler:
                 handler(_id,data)
             else:
@@ -140,14 +151,14 @@ class ChatBotFSM:
     # 點擊btn13後行為,製作orderdetails
     def make_orderRecent_handler(self, majorname):
         def handler(_id,data):
+            
             obj = load_from_db(_id)
-            # print('obj',obj)
             user = data['events'][0]['source']['userId']
             patname = obj['obj']['PAT_NAME']
             bedno = obj['obj']['NOW_BEDNO']
             inpno = obj['obj']['INP_NO']
             orderRecent =get_orderRecent(inpno)
-            # print('orderRecent',orderRecent)
+            
             if not orderRecent:
                 send_message(user, "此active order分類尚無資料")
                 return 
@@ -156,6 +167,34 @@ class ChatBotFSM:
                 sendFlexMsgToUser(user, msg)
 
         return handler  
+    # 點擊btn1 回傳病人生命徵象折線圖
+    def make_vitalsign_handler(self):
+        def handler(_id,data):
+            user = data['events'][0]['source']['userId']
+            print("你好")
+            obj = load_from_db(_id)
+            chartno = obj['obj']['CHART_NO']
+            patname = obj['obj']['PAT_NAME']
+            now = datetime.now().strftime("%Y%m%d")
+            print('now',now)
+            # -api抓取vitalsign數據
+            _5days_vitalsignData = get_vitalsignData(chartno,now,7)
+            # print('vitalsignData',vitalsignData)
+            
+            # -創建vitalsign折線圖(image_data是binary)
+            image_data = create_VitalSignChart(_5days_vitalsignData)
+            # print('image_data',image_data)
+            
+            # -上傳 team+ server
+            imageid = upload_image(image_data)
+            # print('imageid',imageid)  imageid {'FileID': '7390a1b2-0830-41c6-b06a-54479992eb6c'}
+            
+            # -將image傳送給user
+            msg = makeFlexMsg_VitalSignChart(patname,imageid)
+            sendFlexMsgToUser(user, msg)
+            
+            
+        return handler
     
 bot = ChatBotFSM()
 
@@ -177,34 +216,3 @@ def load_from_db(a_id):
     url = "https://emr.kfsyscc.org/mongo/teamplus_ipb/requests/" + a_id
     x = requests.get(url)
     return x.json()
-
-
-# "Majorname_list": [
-#             "口服",
-#             "針劑",
-#             "點滴",
-#             "病檢",
-#             "護理"
-#         ],
-#         "collection": [
-#             {
-#                 "_id": "3",
-#                 "majorname": "口服"
-#             },
-#             {
-#                 "_id": "4",
-#                 "majorname": "針劑"
-#             },
-#             {
-#                 "_id": "5",
-#                 "majorname": "點滴"
-#             },
-#             {
-#                 "_id": "6",
-#                 "majorname": "病檢"
-#             },
-#             {
-#                 "_id": "7",
-#                 "majorname": "護理"
-#             }
-#         ]

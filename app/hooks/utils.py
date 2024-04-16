@@ -101,6 +101,26 @@ def get_orderRecent(inpno):
         if content:
             rs = json.loads(content)
     except Exception as e:
-        logger.error('get_activeorder_by_type: {0}'.format(str(e))) 
+        logger.error('get_orderRecent: {0}'.format(str(e))) 
         return None
     return rs
+
+
+def get_vitalsignData(chartno,searchdate,intervaldays):
+    rs = None
+    try:
+        URI = "http://127.0.0.1:5000/slight/api/teamplus/GetVitalInp"
+        # URI = "{0}/slight/api/nis/inp/GetOrdbyType".format(Config.K8S_URL) =>正式用
+        req_data = {
+            "Chartno": chartno,
+            "SearchDate": searchdate,
+            "IntervalDays":intervaldays
+        }
+        headers={ 'Content-Type': 'application/json'}
+        content = call_api(uri= URI, payload= json.dumps(req_data), headers= headers)
+        if(not isNone(content) ):
+            rs = json.loads(content)
+    except Exception as e:
+        logger.error('get_vitalSignData: {0}'.format(str(e))) 
+        return None
+    return rs['data']

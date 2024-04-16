@@ -1,6 +1,8 @@
 import requests
 import json
 from  settings import Config
+import base64
+
 
 CHANNEL_ACCESS_TOKEN = Config.IPB_CHANNEL_ACCESS_TOKEN
 
@@ -67,3 +69,26 @@ def updateFlexFooter(messagesn, user, finalMsg):
     except json.JSONDecodeError:
         print(f"Failed to parse JSON: {x.text}")
         return None
+    
+
+# 上傳image至 team+ server, 收到回傳token
+def upload_image(image_data):
+    url = "https://team.kfsyscc.org/API/MessageFeedService.ashx"
+    
+    #image_data是二進位json不支援, 無法傳送,改用base64
+    image_data_base64 = base64.b64encode(image_data).decode()
+    # 簡易版通知（team+ 需開啟一對一交談）
+    payload = {
+        "ask": "uploadFile",
+        "file_type":"png",
+        "data_binary": image_data_base64
+    }
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": CHANNEL_ACCESS_TOKEN,
+    }
+
+    x = requests.post(url, headers=headers, json=payload)
+    return x.json()
+

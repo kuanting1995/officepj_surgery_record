@@ -2,95 +2,52 @@ import requests
 import json
 from datetime import datetime
 
-# active order分類按鈕
-def makeFlexMsg_CategoryOrder(_id, obj, Majorname_list):
+
+# 生命徵象折線圖
+def makeFlexMsg_VitalSignChart(patname,imageid):
+    
     msg = {
-        "type": "flex",
-        "contents": {
-            "body": [
-                {
-                    "type": "bodycontainer",
-                    "contents": [
-                        {
-                            "type": "text",
-                            "text": f"病人{obj['PAT_NAME']} active order",
-                            "align": "left",
-                            "fontColor": "#373737",
-                            "fontSize": 18,
-                            "fontStyle": "normal",
-                            "fontWeight": 900,
-                            "marginTop": 10
-                        }
-                    ],
-                    "borderColor": "#DCDCDC",
-                    "paddingStart": 10,
-                    "paddingEnd": 10
-                },
-                {
-                    "type": "bodycontainer",
-                    "contents": [
-                        {
-                            "type": "text",
-                            "text": "分類查詢:",
-                            "align": "left",
-                            "fontColor": "#373737",
-                            "fontSize": 15,
-                            "fontStyle": "normal",
-                            "fontWeight": 500,
-                            "marginTop": 10
-                        }
-                    ],
-                    "borderColor": "#DCDCDC",
-                    "paddingStart": 10,
-                    "paddingEnd": 10
-                },
-                {
-                    "type": "separator",
-                    "height": 1,
-                    "bgcolor": "#DCDCDC"
-                }
-            ],
-            "footer": []
-        }
-    }
-
-    for i, majorname in enumerate(Majorname_list, start=1):
-        if i % 5 == 1:  # Start a new footercontainer every 5 items
-            msg['contents']['footer'].append({
-                "type": "footercontainer",
-                "contents": [],
-                "borderColor": "#DCDCDC",
-                "paddingStart": 10,
-                "paddingEnd": 10
-            })
-
-        msg['contents']['footer'][-1]['contents'].append({
-            "type": "postbackbutton",
-            "text": majorname,
-            "style": "primary",
-            "bgcolor": "#99AAB6",
-            "displayText": f"您已查詢'{majorname}' active order",
-            "data": f"value={i+2}&id={_id}"
-        })
-
-    # Add the special element to the last footercontainer
-    msg['contents']['footer'].append({
-        "type": "footercontainer",
-        "contents": [{"type": "postbackbutton",
-        "text": "最新執行",
-        "style": "primary",
-        "bgcolor": "#2C5062",
-        "displayText": f'您已查詢"最新執行" active order',
-        "data": f"value=20&id={_id}"}],
-        "borderColor": "#DCDCDC",
-		"paddingStart": 10,
-		"paddingEnd": 10
-    })
-
+	"type": "flex",
+	"contents": {
+		"body": [
+			{
+				"type": "bodycontainer",
+				"contents": [
+					{
+						"type": "text",
+						"text": f"病人{patname} 生命徵象(7days)",
+						"align": "left",
+						"fontColor": "#373737",
+						"fontSize": 16,
+						"fontStyle": "normal",
+						"fontWeight": 900,
+						"marginTop": 5
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingBottom": 20,
+				"paddingStart": 10,
+				"paddingEnd": 10
+			},
+			{
+				"type": "bodycontainer",
+				"contents": [
+					{
+						"type": "image",
+						"id": imageid['FileID'],
+						"aspectRatio": "7:3",
+    #   ***w950 7：3, w900 9:4
+						"scaleType": "fit"
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingStart": 10,
+				"paddingEnd": 10
+			}
+		]
+	}
+}
     return msg
-
-
-
 
 # 製作分類過的active order列表
 def makeFlexMsg_OrderDetails(patname, bedno, majorname, activeorder_by_type):
@@ -357,6 +314,94 @@ def makeFlexMsg_OrderDetailsRecent(patname,bedno,ordertype_value ,data):
         }
 
         msg['contents']['body'].extend([date_container, text_container])
+
+    return msg
+
+
+# active order分類按鈕
+def makeFlexMsg_CategoryOrder(_id, obj, Majorname_list):
+    msg = {
+        "type": "flex",
+        "contents": {
+            "body": [
+                {
+                    "type": "bodycontainer",
+                    "contents": [
+                        {
+                            "type": "text",
+                            "text": f"病人{obj['PAT_NAME']} active order",
+                            "align": "left",
+                            "fontColor": "#373737",
+                            "fontSize": 18,
+                            "fontStyle": "normal",
+                            "fontWeight": 900,
+                            "marginTop": 10
+                        }
+                    ],
+                    "borderColor": "#DCDCDC",
+                    "paddingStart": 10,
+                    "paddingEnd": 10
+                },
+                {
+                    "type": "bodycontainer",
+                    "contents": [
+                        {
+                            "type": "text",
+                            "text": "分類查詢:",
+                            "align": "left",
+                            "fontColor": "#373737",
+                            "fontSize": 15,
+                            "fontStyle": "normal",
+                            "fontWeight": 500,
+                            "marginTop": 10
+                        }
+                    ],
+                    "borderColor": "#DCDCDC",
+                    "paddingStart": 10,
+                    "paddingEnd": 10
+                },
+                {
+                    "type": "separator",
+                    "height": 1,
+                    "bgcolor": "#DCDCDC"
+                }
+            ],
+            "footer": []
+        }
+    }
+
+    for i, majorname in enumerate(Majorname_list, start=1):
+        if i % 5 == 1:  # Start a new footercontainer every 5 items
+            msg['contents']['footer'].append({
+                "type": "footercontainer",
+                "contents": [],
+                "borderColor": "#DCDCDC",
+                "paddingStart": 10,
+                "paddingEnd": 10
+            })
+
+        msg['contents']['footer'][-1]['contents'].append({
+            "type": "postbackbutton",
+            "text": majorname,
+            "style": "primary",
+            "bgcolor": "#99AAB6",
+            "displayText": f"您已查詢'{majorname}' active order",
+            "data": f"value={i+2}&id={_id}"
+        })
+
+    # Add the special element to the last footercontainer
+    msg['contents']['footer'].append({
+        "type": "footercontainer",
+        "contents": [{"type": "postbackbutton",
+        "text": "最新執行",
+        "style": "primary",
+        "bgcolor": "#2C5062",
+        "displayText": f'您已查詢"最新執行" active order',
+        "data": f"value=20&id={_id}"}],
+        "borderColor": "#DCDCDC",
+		"paddingStart": 10,
+		"paddingEnd": 10
+    })
 
     return msg
 
@@ -633,7 +678,7 @@ def makeFlexMsg_PatBaseInfo(_id,data):
 						"type": "postbackbutton",
 						"text": "生命徵象",
 						"style": "primary",
-                        "displayText": "您已查詢生命徵象",
+                        "displayText": "您已查詢生命徵象,圖表產製中...",
                         "data": "value=1&id="+_id
 					}
 				],
@@ -660,6 +705,8 @@ def makeFlexMsg_PatBaseInfo(_id,data):
 	}
 }
     return msg
+
+
 
 # if __name__=="__main__":
 #     x = makeFlexMsgForUser("林OO", "20230424")
