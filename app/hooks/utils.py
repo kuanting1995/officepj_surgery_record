@@ -130,7 +130,7 @@ def get_vitalsignData(chartno,searchdate,intervaldays):
     rs = None
     try:
         # URI = "http://127.0.0.1:5000/slight/api/teamplus/GetVitalInp"
-        URI = "{0}/slight/api/nis/inp/GetOrdbyType".format(Config.K8S_URL)
+        URI = "{0}/slight/api/teamplus/GetVitalInp".format(Config.K8S_URL)
         req_data = {
             "Chartno": chartno,
             "SearchDate": searchdate,
