@@ -3,10 +3,6 @@ import subprocess
 import os
 import tempfile
 from datetime import datetime
-import requests
-import json
-from settings import Config
-
 """
 帶入data生成linechart image
 使用python內建套件subprocess執行highchart-server功能,須先載nodejs和 npm highchart-server
@@ -29,10 +25,17 @@ def create_VitalSignChart(data):
         "width": 950  # 調整此數值以改變圖表寬度
     },
     "title": {
-        "text": "vital sign",
+        "text": "生命徵象",
         "style": {
             "color": "#666666", 
             "fontSize": "14px"
+        }
+    },
+    "subtitle": {
+        "text": "vital sign",
+        "style": {
+            "color": "#666666", 
+            "fontSize": "10px"
         }
     },
     "xAxis": {
@@ -189,18 +192,37 @@ def create_VitalSignChart(data):
         }]
     }
             
-    # Highcharts Export Server URL
-    
-    url = "{0}/export".format(Config.HIGHCHARTS_SERVER)
-    # 发送 POST 请求到 Export Server
-    response = requests.post(url, json={"options": options, "type": "png"})     
-    # print(response)     
-    if response.status_code == 200:
-        return response.content
-    else:
-        return b""
+    # 創建臨時文件存取image binary, temp_fd檔案描述, temp_file檔案位置
+    temp_fd, temp_file = tempfile.mkstemp()
 
- 
+    # 存取圖檔至 temp_file
+    with open(temp_file, 'w') as f:
+        json.dump(options, f)
+
+    # 圖檔名稱：
+    output_file = "linechart_{:%Y_%m_%d_%H_%M}.png".format(datetime.now())
+    
+    # 使用 highcharts-export-server 創建chart
+    subprocess.run([
+        "highcharts-export-server",
+        "--infile", temp_file,
+        "--type", "png",
+        "--outfile", output_file
+    ])
+    # 讀取並存取 image_data (binary data-rb)
+    with open(output_file, "rb") as f:
+        image_data = f.read()
+    
+    # 刪除創建的圖片
+    os.remove(output_file)
+
+    # 關閉 file descriptor
+    os.close(temp_fd)
+
+    # 刪除 temporary file
+    os.remove(temp_file)
+
+    return image_data
 
 
 

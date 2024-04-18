@@ -21,8 +21,8 @@ class Config(object):
     NAPI_URL =  os.getenv('FK_NAPI_URL', 'https://napi.kfsyscc.org')
     GATEWAY_URL =  os.getenv('FK_GATEWAY_URL', 'http://hisweb3.kfcc.intra')
     K8S2_URL =  os.getenv('FK_K8S2_URL', 'https://ing-test.kfsyscc.org')
+    HIGHCHARTS_SERVER =  os.getenv('FK_HIGHCHARTS_SERVER', 'https://highcharts-server-test.kfsyscc.org')
     
-
 
 #hooks token
     IT_CHANNEL_ACCESS_TOKEN = os.getenv('FK_IT_CHANNEL_ACCESS_TOKEN', 'eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ0eXBlIjowLCJleHAiOjAsImlkIjoyfQ.K2ZsjFzSHGQTeUHPaMAZ2h59nWNpSHbgPiEPv6pVNG0')

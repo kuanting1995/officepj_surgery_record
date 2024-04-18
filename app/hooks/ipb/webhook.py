@@ -72,6 +72,7 @@ class ChatBotFSM:
                     _id = obj["_id"]
                     PatBaseInfomsg = makeFlexMsg_PatBaseInfo(_id,obj)
                     msg = sendFlexMsgToUser(user, PatBaseInfomsg)
+
                     obj["messageSN"] = msg['MessageSN']
                     save_to_db(obj)
                 except Exception as e:
@@ -166,7 +167,7 @@ class ChatBotFSM:
             # -創建vitalsign折線圖(image_data是binary)
             image_data = create_VitalSignChart(_5days_vitalsignData)
             # print('image_data',image_data)
-            
+
             # -上傳 team+ server
             imageid = upload_image(image_data)
             # print('imageid',imageid)  imageid {'FileID': '7390a1b2-0830-41c6-b06a-54479992eb6c'}

@@ -334,7 +334,7 @@ def makeFlexMsg_PatBaseInfo(_id,data):
     nowstation = data['NOW_STATIONNO']
     nowbedno = data['NOW_BEDNO']
     docname = data['DOC_NAME1']
-    nursename = data['DOC_NAME2']
+    nursename = data['DOC_NAME2'] if(data['DOC_NAME2']) else " "
     msg = {
 	"type": "flex",
 	"contents": {

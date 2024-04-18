@@ -54,6 +54,8 @@ spec:
               value: "https://ing2.kfsyscc.org"
             - name: FK_NAPI_URL
               value: "https://napi.kfsyscc.org"
+            - name: FK_HIGHCHARTS_SERVER
+            - value: "https://highcharts-server-test.kfsyscc.org"  
             - name: FK_IT_CHANNEL_ACCESS_TOKEN
               value: "eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ0eXBlIjowLCJleHAiOjAsImlkIjoyfQ.K2ZsjFzSHGQTeUHPaMAZ2h59nWNpSHbgPiEPv6pVNG0"
             - name: FK_IPB_CHANNEL_ACCESS_TOKEN
