@@ -3,14 +3,16 @@ from flask import Flask, request, jsonify
 import requests
 from ..route import api_route 
 from  settings import Config
-from lib.Checker import isNationalIdentificationNumberValid, is8Num, is4Num
-from hooks.utils import get_med_info,get_vitalsignData,get_activeorder_all
+from lib.Checker import isNationalIdentificationNumberValid, is8Num, is4Num, isNone
+from hooks.utils import get_med_info,get_vitalsignData,get_activeorder_all, get_user_info_by_ad
 from hooks.ipb.makemsg import makeFlexMsg_PatBaseInfo, makeFlexMsg_CategoryOrder,makeFlexMsg_OrderDetails,makeFlexMsg_VitalSignChart
 from hooks.ipb.utils_teamplus import send_message, sendFlexMsgToUser, upload_image
 from hooks.ipb.make_linechart import create_VitalSignChart
 import uuid
 from urllib.parse import parse_qs
 from datetime import datetime
+from lib.logger import logger
+
 
 # demo:https://ing2.kfsyscc.org/hookap/hooks/ipb/webhook 
 # 地端測試：http://172.21.42.22:5001/hookap/hooks/ipb/webhook
@@ -21,7 +23,22 @@ CHANNEL_ACCESS_TOKEN = Config.IPB_CHANNEL_ACCESS_TOKEN
 def _webhook():
     if not request.data:
         return "Webhook received!"
+    
     data = request.json
+    data['empInfo'] = None
+    uid = data['events'][0]['source']['userId']
+    
+    emp = get_user_info_by_ad(uid)
+    if(isNone(emp) or (not emp['status']) or isNone(emp['data']) ):
+        msg= "未授權的使用者"
+        send_message(uid, msg) 
+        logger.error(msg)
+        return msg
+    else:
+        data['empInfo'] = emp['data']
+
+        
+        
     bot.handle_event(data['events'][0]['type'], data)
     return data
 
@@ -61,10 +78,11 @@ class ChatBotFSM:
     def handle_message_event(self, data):
             req_text = data['events'][0]['message']['text'] 
             user = data['events'][0]['source']['userId']
+            emp =  data['empInfo']
             # 判斷是否為手機/病例號格式
             if isNationalIdentificationNumberValid(req_text) or is8Num(req_text) or is4Num(req_text):
                 try:
-                    rs = get_med_info(req_text)
+                    rs = get_med_info(req_text, emp['EMP_NO'])
                     # print('patinfo',rs)
                     obj = rs['data']
                     # 隨機產生uuid碼
@@ -155,6 +173,7 @@ class ChatBotFSM:
     def make_vitalsign_handler(self):
         def handler(_id,data):
             user = data['events'][0]['source']['userId']
+            emp =  data['empInfo']
             obj = load_from_db(_id)
             chartno = obj['obj']['CHART_NO']
             patname = obj['obj']['PAT_NAME']

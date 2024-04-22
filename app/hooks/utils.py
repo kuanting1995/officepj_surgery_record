@@ -26,18 +26,42 @@ def get_user_info(user_id):
         return None
     return rs
 
+
+@cache.memoize(14400)  
+def get_user_info_by_email(email):
+    rs = None
+    try:
+        URI = "{0}/slight/api/emp/CurrentEmployeeByEmail".format(Config.K8S_URL)
+        # 資料
+        req_data = {
+            "EMAIL": email,
+            "USER_ID": "KFSYSCC"
+        }
+        headers={ 'Content-Type': 'application/json'}
+        content = call_api(uri= URI, payload= json.dumps(req_data), headers= headers, timeout=10)
+        if(not isNone(content) ):
+            rs = json.loads(content)
+    except Exception as e: 
+        logger.error('get_user_info: {0}'.format(str(e))) 
+        return None
+    return rs
+
+
+def get_user_info_by_ad(ad):
+    return get_user_info_by_email("{0}@kfsyscc.org".format(ad))
 # note:timeout=10->呼叫一個API或者執行一個可能需要等待的操作時，有時你可能不想讓程式無限期的等待。在這種情況下，你可以設置一個超時時間。
 
 
 # 獲取病人基本資料
-def get_med_info(pat_id):
+@cache.memoize(600)
+def get_med_info(pat_id, userid):
     rs = None
     try:
         URI = "{0}/slight/api/nis/inp/GetInpInfo".format(Config.K8S_URL)
         # 資料"PID":"5902","USER_ID":"004909",
         req_data = {
             "PID": pat_id,
-            "USER_ID": "004909"
+            "USER_ID": userid
         }
         headers={ 'Content-Type': 'application/json'}
         content = call_api(uri= URI, payload= json.dumps(req_data), headers= headers)
@@ -126,6 +150,7 @@ def get_activeorder_all(chartno,inpno,ordertype):
         return None
     return rs
 
+@cache.memoize(300)
 def get_vitalsignData(chartno,searchdate,intervaldays):
     rs = None
     try:
