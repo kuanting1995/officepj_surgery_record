@@ -193,8 +193,8 @@ def create_VitalSignChart(data):
     
     url = "{0}/export".format(Config.HIGHCHARTS_SERVER)
     # 发送 POST 请求到 Export Server
-    response = requests.post(url, json={"options": options, "type": "png"})     
-    # print(response)     
+    response = requests.post(url, json={"options": options, "type": "png"}, timeout=(5, 30))     
+  
     if response.status_code == 200:
         return response.content
     else:
