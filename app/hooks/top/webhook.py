@@ -7,7 +7,11 @@ from lib.Checker import isNone
 import uuid
 from urllib.parse import parse_qs
 from datetime import datetime
+
 from lib.logger import logger
+from .EventHandler import BotEventHandler
+from hooks.utils import get_med_info,get_vitalsignData,get_activeorder_all, get_user_info_by_ad
+from hooks.utils import sendTextMsgToUser
 
 
 CHANNEL_ACCESS_TOKEN = Config.TOP_CHANNEL_ACCESS_TOKEN
@@ -17,4 +21,23 @@ def _webhook():
     if not request.data:
         return "Webhook received!"
 
-    return request.data
+    bot = BotEventHandler(CHANNEL_ACCESS_TOKEN)
+    
+    data = request.json
+    data['empInfo'] = None
+    uid = data['events'][0]['source']['userId']
+    
+    emp = get_user_info_by_ad(uid)
+    if(isNone(emp) or (not emp['status']) or isNone(emp['data']) ):
+        msg= "未授權的使用者"
+        sendTextMsgToUser(uid, msg, CHANNEL_ACCESS_TOKEN) 
+        logger.error(msg)
+        return msg
+    else:
+        data['empInfo'] = emp['data']
+
+        
+        
+    bot.handle_event(data['events'][0]['type'], data)
+    return data    
+

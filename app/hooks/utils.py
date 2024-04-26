@@ -6,6 +6,86 @@ from lib.logger import logger
 from lib.Checker import isNone
 from lib.utils import call_api,call_api_get
 import requests
+import base64
+
+
+# 傳Flex Messages給user
+def sendFlexMsgToUser(user,msg, accessToken):
+    url = "{0}/API/MessageFeedService.ashx".format(Config.TEAM_SERVER)
+    flexMsg = {
+        "ask": "broadcastMessageByLoginNameList",
+        "recipientList": [user],
+        "message": msg
+    }
+    headers = {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Authorization': accessToken 
+        }
+    x = requests.post(url, headers=headers, json=flexMsg, timeout=10)
+    x.raise_for_status()
+    return x.json()
+
+@cache.memoize(10)  
+def sendTextMsgToUser(recipient, message, accessToken):
+    url = "{0}/API/MessageFeedService.ashx".format(Config.TEAM_SERVER)
+
+    # 簡易版通知（team+ 需開啟一對一交談）
+    payload = {
+        "ask": "sendMessage",
+        "recipient": recipient,
+        "message": {"type": "text", "text": message},
+    }
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": accessToken,
+    }
+
+    x = requests.post(url, headers=headers, json=payload, timeout=10)
+    x.raise_for_status()
+    return x.json()
+
+def updateFlexFooter(msgID, username, finalMsg, accessToken):
+    url = "{0}/API/MessageFeedService.ashx".format(Config.TEAM_SERVER)
+    data = {
+        "ask": "updateFlexMessageFooter",
+        "messageSN": msgID,
+        "recipient": username,
+        "flexFooter": {
+            "type": "text",
+            "text": finalMsg,
+            "fontColor": "#000000",
+            "align": "center",
+            "fontSize": 14
+        }
+    }
+    headers = {
+        "Content-Type": "application/json; charset=utf-8",
+        "Authorization": accessToken
+    }
+
+    x = requests.post(url, headers=headers, json=data)
+    return x.json()
+
+# 上傳image至 team+ server, 收到回傳token
+@cache.memoize(86400)  
+def upload_image(image_data, accessToken):
+    url = "{0}/API/MessageFeedService.ashx".format(Config.TEAM_SERVER)
+    
+    #image_data是二進位json不支援, 無法傳送,改用base64
+    image_data_base64 = base64.b64encode(image_data).decode()
+    # 簡易版通知（team+ 需開啟一對一交談）
+    payload = {
+        "ask": "uploadFile",
+        "file_type":"png",
+        "data_binary": image_data_base64
+    }
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": accessToken,
+    }
+    x = requests.post(url, headers=headers, json=payload, timeout=15)
+    return x.json()
 
 @cache.memoize(3600)  
 def get_user_info(user_id):

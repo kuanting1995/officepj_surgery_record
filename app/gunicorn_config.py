@@ -96,6 +96,11 @@ max_requests_jitter=100
 #--threads 参数只会影响到 gthread worker class, 其他的 worker 是不受这个参数影响的
 # threads = 1
 
+# 在 Gunicorn 中，preload_app 參數是一個布林值配置選項，
+# 用於控制是否在啟動工作進程(worker processes)前預先加載應用程式。
+# 開啟此選項 (preload_app=True) 可以提升啟動速度並節省記憶體使用，
+# 但也有其限制和潛在問題。以下是 preload_app 的一些關鍵點和用途
+
 # should save some memory:
 preload_app = True
 
@@ -122,7 +127,6 @@ timeout = 90
 #       True or False
 #
 #spew = False
-
 
 #
 # Server mechanics
