@@ -57,6 +57,8 @@ class BotEventHandler:
 
 from .DiscertSignNotify import get_DiagCertificate, makeFlexMsg_DecertPreview
 from io import BytesIO
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 
 def comfirm_discert(caller, data):
     user = data['events'][0]['source']['userId']
@@ -104,7 +106,8 @@ def preview_discert(caller, data):
         options.add_argument("--headless")  # 選擇無頭模式運行
         options.headless = True
          
-        driver = webdriver.Chrome(options=options)
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=options)
         driver.set_window_size(794, 1122)
         driver.get("data:text/html;charset=utf-8,{html_content}".format(html_content=cert[0]['HTML']))
         # Set the size of the window to capture full page
