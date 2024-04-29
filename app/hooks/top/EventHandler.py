@@ -73,6 +73,9 @@ def comfirm_discert(caller, data):
         print(emp['EMP_NO'])
     #    res = call_api_get(cert[0]['CONFIRM_URL'])
         sendTextMsgToUser(user, '診斷書已確認', caller.AccessToken)
+    elif(cert[0]['DOC_NO'] != emp['EMP_NO']):
+        sendTextMsgToUser(user, '人員身份認證錯誤無法簽章', caller.AccessToken)
+        
     else:
         sendTextMsgToUser(user, '診斷書已確認', caller.AccessToken)
 
@@ -86,9 +89,9 @@ def delete_discert(caller, data):
     
     cert = get_DiagCertificate(docno, certno)
     if(not isNone(cert) and not isNone(cert[0]['DELETE_URL']) and cert[0]['DOC_NO'] == emp['EMP_NO']):
-
-    #    res = call_api_get(cert[0]['DELETE_URL'])
         sendTextMsgToUser(user, '診斷書已刪除', caller.AccessToken)
+    elif(cert[0]['DOC_NO'] != emp['EMP_NO']):
+        sendTextMsgToUser(user, '人員身份認證錯誤無法刪除', caller.AccessToken)        
     else:
         sendTextMsgToUser(user, '診斷書已刪除', caller.AccessToken)
         
