@@ -312,23 +312,23 @@ def makeFlexMsg(data):
 				"paddingStart": 10,
 				"paddingEnd": 10
 			},
-			{
-				"type": "footercontainer",
-				"contents": [
-					{
-						"type": "postbackbutton",
-						"text": "瀏覽",
-						"style": "primary",
-						"displayText": "產生畫面中...",
-						"data": "api=preview-discert&docno={0}&certno={1}".format(docNo, certno)
-					}
-				],
-				"borderColor": "#DCDCDC",
-				"paddingTop": 0,
-				"paddingBottom": 0,
-				"paddingStart": 10,
-				"paddingEnd": 10
-			},   
+			# {
+			# 	"type": "footercontainer",
+			# 	"contents": [
+			# 		{
+			# 			"type": "postbackbutton",
+			# 			"text": "瀏覽",
+			# 			"style": "primary",
+			# 			"displayText": "產生畫面中...",
+			# 			"data": "api=preview-discert&docno={0}&certno={1}".format(docNo, certno)
+			# 		}
+			# 	],
+			# 	"borderColor": "#DCDCDC",
+			# 	"paddingTop": 0,
+			# 	"paddingBottom": 0,
+			# 	"paddingStart": 10,
+			# 	"paddingEnd": 10
+			# },   
 			{
 				"type": "footercontainer",
 				"contents": [
