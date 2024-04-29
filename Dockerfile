@@ -7,7 +7,8 @@ ENV DEBIAN_FRONTEND noninteractive
 WORKDIR /opt/app
 COPY ./app /opt/app
 COPY ./requirements.txt /opt/app
-COPY ./google-chrome-stable_current_amd64_104-0-5112-102.deb /opt/app
+COPY ./plugin/google-chrome-stable_current_amd64_104-0-5112-102.deb /opt/app
+COPY ./plugin/chromedriver_linux64_CHROME_104.zip /opt/app
 
 RUN mkdir -p /opt/app/log/error
 RUN mkdir -p /opt/app/log/access
@@ -41,13 +42,17 @@ RUN apt-get update && apt-get install -y \
 # 使用 apt-get 安裝 Chrome 以自動解決依賴
 RUN apt-get update && apt-get install -y /opt/app/google-chrome-stable_current_amd64_104-0-5112-102.deb \
     && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /opt/app/google-chrome-stable_current_amd64_104-0-5112-102.deb
+    && rm /opt/app/google-chrome-stable_current_amd64_104-0-5112-102.deb
 
 # # 下載並安裝 ChromeDriver
-ENV CHROMEDRIVER_VERSION 104.0.5112.79
-RUN wget -q https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip \
-    && unzip chromedriver_linux64.zip -d /usr/local/bin/ \
-    && rm chromedriver_linux64.zip
+# ENV CHROMEDRIVER_VERSION 104.0.5112.79
+# RUN wget -q https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip \
+#     && unzip chromedriver_linux64.zip -d /usr/local/bin/ \
+#     && rm chromedriver_linux64.zip
+
+
+RUN unzip /opt/app/chromedriver_linux64_CHROME_104.zip -d /usr/local/bin/ \
+    && rm /opt/app/chromedriver_linux64_CHROME_104.zip
 # 設置無頭 Chrome 的環境變量
 ENV DISPLAY=:99
 
