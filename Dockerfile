@@ -28,6 +28,7 @@ RUN pip install -U pip setuptools==57.5.0
 # 安裝 gnupg 和其他必需的系統依賴項
 RUN apt-get update && apt-get install -y \
     wget \
+    fonts-wqy-zenhei \
     gnupg \
     unzip \
     && rm -rf /var/lib/apt/lists/*

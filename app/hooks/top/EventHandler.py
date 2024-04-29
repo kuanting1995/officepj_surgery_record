@@ -106,22 +106,25 @@ def preview_discert(caller, data):
         # options.add_argument("--headless")  # 選擇無頭模式運行
         options.headless = True
          
-        # service = Service(ChromeDriverManager().install())
+        
         options.add_argument("--headless")  # 啟用無頭模式
         options.add_argument("--disable-gpu")  # 禁用 GPU 硬件加速
         options.add_argument("--no-sandbox")  # 禁用沙盒（在 Docker 和某些 Linux 環境下運行時需要）
         options.add_argument("--disable-dev-shm-usage")  # 禁用 /dev/shm 使用
         options.add_argument("--remote-debugging-port=9222")  # 設置遠程調試端口
 
-        # 如果是在 Docker 容器中運行，確保指定 binary 路徑
-        options.binary_location = "/usr/bin/google-chrome"
+        if(Config.APP_MODE == 'TEST'):
+            service = Service(ChromeDriverManager().install())  
+        else:
+            # 如果是在 Docker 容器中運行，確保指定 binary 路徑
+            options.binary_location = "/usr/bin/google-chrome"
+            service = Service(executable_path="/usr/local/bin/chromedriver")  # 替換為實際的 ChromeDriver 路徑
+              
 
-        service = Service(executable_path="/usr/local/bin/chromedriver")  # 替換為實際的 ChromeDriver 路徑
-        driver = webdriver.Chrome(service=service, options=options)        
-            
-        # driver = webdriver.Chrome(service=service, options=options)
+        
+        driver = webdriver.Chrome(service=service, options=options)  
         driver.set_window_size(794, 1122)
-        driver.get("data:text/html;charset=big5,{html_content}".format(html_content=cert[0]['HTML']))
+        driver.get("data:text/html;charset=UTF-8,{html_content}".format(html_content=cert[0]['HTML']))
         # Set the size of the window to capture full page
         # 獲取截圖為 PNG 格式的字節數據
         screenshot_as_bytes = driver.get_screenshot_as_png()  # 返回截圖的字節數據
