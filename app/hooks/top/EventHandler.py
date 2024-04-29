@@ -106,8 +106,14 @@ def preview_discert(caller, data):
         options.add_argument("--headless")  # 選擇無頭模式運行
         options.headless = True
          
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=options)
+        # service = Service(ChromeDriverManager().install())
+        service = Service('/usr/local/bin/chromedriver')
+
+        service.start()
+
+        driver = webdriver.Remote(service.service_url, options=options)
+        
+        # driver = webdriver.Chrome(service=service, options=options)
         driver.set_window_size(794, 1122)
         driver.get("data:text/html;charset=utf-8,{html_content}".format(html_content=cert[0]['HTML']))
         # Set the size of the window to capture full page
