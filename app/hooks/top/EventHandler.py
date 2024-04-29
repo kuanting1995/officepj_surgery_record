@@ -125,6 +125,8 @@ def preview_discert(caller, data):
         driver = webdriver.Chrome(service=service, options=options)  
         driver.set_window_size(794, 1122)
         driver.get("data:text/html;charset=UTF-8,{html_content}".format(html_content=cert[0]['HTML']))
+        driver.execute_script("document.body.style.fontFamily = 'WenQuanYi Zen Hei';")
+         
         # Set the size of the window to capture full page
         # 獲取截圖為 PNG 格式的字節數據
         screenshot_as_bytes = driver.get_screenshot_as_png()  # 返回截圖的字節數據
