@@ -38,11 +38,11 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
     && rm -rf /var/lib/apt/lists/*
 
 # # 下載並安裝 ChromeDriver
-ENV CHROMEDRIVER_VERSION 114.0.5735.90
-RUN wget -q https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip \
+ENV CHROMEDRIVER_VERSION 124.0.6367.91
+RUN wget -q https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip \
     && unzip chromedriver_linux64.zip -d /usr/local/bin/ \
     && rm chromedriver_linux64.zip
-
+    
 # 設置無頭 Chrome 的環境變量
 ENV DISPLAY=:99
 
