@@ -222,4 +222,4 @@ def preview_discert(caller, data):
         sendFlexMsgToUser(user, msg, caller.AccessToken)
         
     else:
-        sendTextMsgToUser(user, '診斷書無法瀏覽', caller.AccessToken)
+        sendTextMsgToUser(user, '已簽署或作廢無法瀏覽', caller.AccessToken)
