@@ -62,6 +62,9 @@ spec:
               value: "eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ0eXBlIjowLCJleHAiOjAsImlkIjoyOX0.xTCDEgjC5pKgUhSKRgZJgQHUhPWUsBZTm1g2NEKZ2wU"
             - name: FK_TOP_CHANNEL_ACCESS_TOKEN
               value: "eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ0eXBlIjowLCJleHAiOjAsImlkIjozMH0.1JUZozcGrnCL-u5IEPkaogoCvL91kjcdRPMn0Ghrnrs"
+            - name: FK_DISCRET_CHANNEL_ACCESS_TOKEN
+              value: "eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ0eXBlIjowLCJleHAiOjAsImlkIjozMn0.whEcXKbjl6oZ790Fmhz5Y0oazevXJJwoqskYlMViznY"
+            
           ports:
             - containerPort: 5000
           volumeMounts:

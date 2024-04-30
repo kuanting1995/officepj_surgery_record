@@ -29,6 +29,7 @@ class Config(object):
     IT_CHANNEL_ACCESS_TOKEN = os.getenv('FK_IT_CHANNEL_ACCESS_TOKEN', 'eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ0eXBlIjowLCJleHAiOjAsImlkIjoyfQ.K2ZsjFzSHGQTeUHPaMAZ2h59nWNpSHbgPiEPv6pVNG0')
     IPB_CHANNEL_ACCESS_TOKEN = os.getenv('FK_IPB_CHANNEL_ACCESS_TOKEN', 'eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ0eXBlIjowLCJleHAiOjAsImlkIjoyOX0.xTCDEgjC5pKgUhSKRgZJgQHUhPWUsBZTm1g2NEKZ2wU')
     TOP_CHANNEL_ACCESS_TOKEN = os.getenv('FK_TOP_CHANNEL_ACCESS_TOKEN', 'eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ0eXBlIjowLCJleHAiOjAsImlkIjozMH0.1JUZozcGrnCL-u5IEPkaogoCvL91kjcdRPMn0Ghrnrs')
+    DISCRET_CHANNEL_ACCESS_TOKEN = os.getenv('FK_DISCRET_CHANNEL_ACCESS_TOKEN', 'eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ0eXBlIjowLCJleHAiOjAsImlkIjozMn0.whEcXKbjl6oZ790Fmhz5Y0oazevXJJwoqskYlMViznY')
 # SYSCC
     SYS_AES_KEY = os.getenv('FK_SYS_AES_KEY', 'KfSyScC')
 
@@ -42,7 +43,7 @@ class Config(object):
     REDIS_PASSWORD, REDIS_HOST,  REDIS_PORT   
     ))
 
-           
+          
 class Message(object):
     TOKEN_IS_MISING = 'Access token is missing in the authorization http request head.'
 

@@ -12,7 +12,9 @@ from lib.Checker import isNone
 from hooks.utils import get_user_info
 from lib.web import  apikey_required
 from hooks.utils import sendFlexMsgToUser
-CHANNEL_ACCESS_TOKEN = Config.TOP_CHANNEL_ACCESS_TOKEN
+from .utils import save_to_db, CHANNEL_ACCESS_TOKEN
+import uuid
+
 
 req_params = {}
 req_params['UserID'] = ['required']
@@ -49,12 +51,18 @@ def _sendDiscertSignNotify(args):
         response_data['data'] = None
         cert = get_DiagCertificate(args['USER_INFO']['EMP_NO'], args['CertNo'])
         if(not isNone(cert)):
+            cert[0]['_id']  = str(uuid.uuid4())
             msg = makeFlexMsg(cert[0])
-            teamApiResult = sendFlexMsgToUser( "linhui", msg,  CHANNEL_ACCESS_TOKEN)
+            # teamApiResult = sendFlexMsgToUser(args['USER_INFO']['AD_ACCOUNT'].lower(), msg,  CHANNEL_ACCESS_TOKEN)
+            teamApiResult = sendFlexMsgToUser('linhui', msg,  CHANNEL_ACCESS_TOKEN)
             response_data['data'] = teamApiResult
             response_data['status'] = False if("MessageSN" not in teamApiResult) else True
             response_data['message'] = teamApiResult['MessageSN'] if('MessageSN' in teamApiResult) else teamApiResult['message']
-        
+            msgSN = teamApiResult["MessageSN"]
+            cert[0]["messageSN"] = msgSN
+            save_to_db(cert[0], "乙種診斷書")
+            
+  
         return response_data
     try:
         _check_parameter()
@@ -89,7 +97,7 @@ def makeFlexMsg(data):
     if(isNone(data['CERT_NO']) or isNone(data['DOC_NO'])):
         raise ValueError("資料錯誤")
     
-    
+    id = data['_id']
     certno = data['CERT_NO']
     patname = data['PAT_NAME']
     chartno = data['CHART_NO']
@@ -301,45 +309,48 @@ def makeFlexMsg(data):
 				"type": "footercontainer",
 				"contents": [
 					{
+                        "id": "{0}-comfirm".format(id),
 						"type": "postbackbutton",
 						"text": "確認",
 						"style": "primary",
 						"displayText": "確認中...",
-						"data": "api=comfirm-discert&docno={0}&certno={1}".format(docNo, certno)
+						"data": "api=comfirm-discert&msgid={0}&docno={1}&certno={2}".format(id, docNo, certno)
 					}
 				],
 				"borderColor": "#DCDCDC",
 				"paddingStart": 10,
 				"paddingEnd": 10
 			},
-			# {
-			# 	"type": "footercontainer",
-			# 	"contents": [
-			# 		{
-			# 			"type": "postbackbutton",
-			# 			"text": "瀏覽",
-			# 			"style": "primary",
-			# 			"displayText": "產生畫面中...",
-			# 			"data": "api=preview-discert&docno={0}&certno={1}".format(docNo, certno)
-			# 		}
-			# 	],
-			# 	"borderColor": "#DCDCDC",
-			# 	"paddingTop": 0,
-			# 	"paddingBottom": 0,
-			# 	"paddingStart": 10,
-			# 	"paddingEnd": 10
-			# },   
 			{
 				"type": "footercontainer",
 				"contents": [
 					{
+                      "id": "{0}-preview".format(id),
+						"type": "postbackbutton",
+						"text": "瀏覽",
+						"style": "primary",
+						"displayText": "產生畫面中...",
+						"data": "api=preview-discert&msgid={0}&docno={1}&certno={2}".format(id, docNo, certno)
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingTop": 0,
+				"paddingBottom": 0,
+				"paddingStart": 10,
+				"paddingEnd": 10
+			},   
+			{
+				"type": "footercontainer",
+				"contents": [
+					{
+                        "id": "{0}-delete".format(id),
 						"type": "postbackbutton",
 						"text": "刪除",
 						"style": "primary",
 						"displayText": "刪除中...",
                         "bgcolor":"#808080",
                         "fontColor":"#ff0000",
-						"data": "api=delete-discert&docno={0}&certno={1}".format(docNo, certno)
+						"data": "api=delete-discert&msgid={0}&docno={1}&certno={2}".format(id, docNo, certno)
     				}
 				],
 				"borderColor": "#DCDCDC",
