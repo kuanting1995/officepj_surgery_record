@@ -346,10 +346,8 @@ def makeFlexMsg(data):
                         "id": "{0}-delete".format(id),
 						"type": "postbackbutton",
 						"text": "刪除",
-						"style": "primary",
+						"style": "secondary",
 						"displayText": "刪除中...",
-                        "bgcolor":"#808080",
-                        "fontColor":"#ff0000",
 						"data": "api=delete-discert&msgid={0}&docno={1}&certno={2}".format(id, docNo, certno)
     				}
 				],

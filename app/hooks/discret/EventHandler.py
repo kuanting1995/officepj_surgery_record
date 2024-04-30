@@ -104,6 +104,7 @@ def request_api(url):
 
    
 def comfirm_discert(caller, data):
+   
     now = datetime.now()
     ts = now.timestamp()
     user = data['events'][0]['source']['userId']

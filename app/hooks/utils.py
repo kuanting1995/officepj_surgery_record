@@ -12,6 +12,7 @@ import base64
 # 傳Flex Messages給user
 def sendFlexMsgToUser(user,msg, accessToken):
     url = "{0}/API/MessageFeedService.ashx".format(Config.TEAM_SERVER)
+    
     flexMsg = {
         "ask": "broadcastMessageByLoginNameList",
         "recipientList": [user],
@@ -27,8 +28,7 @@ def sendFlexMsgToUser(user,msg, accessToken):
 
 @cache.memoize(10)  
 def sendTextMsgToUser(recipient, message, accessToken):
-    url = "{0}/API/MessageFeedService.ashx".format(Config.TEAM_SERVER)
-
+    url = '{0}/API/MessageFeedService.ashx'.format(Config.TEAM_SERVER)
     # 簡易版通知（team+ 需開啟一對一交談）
     payload = {
         "ask": "sendMessage",
