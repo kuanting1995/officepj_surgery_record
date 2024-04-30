@@ -198,7 +198,7 @@ def preview_discert(caller, data):
         options.add_argument("--disable-dev-shm-usage")  # 禁用 /dev/shm 使用
         options.add_argument("--remote-debugging-port=9222")  # 設置遠程調試端口
 
-        if(Config.APP_MODE == 'TEST'):
+        if(Config.APP_MODE == 'DEV'):
             service = Service(ChromeDriverManager().install())  
         else:
             # 如果是在 Docker 容器中運行，確保指定 binary 路徑

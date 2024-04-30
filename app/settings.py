@@ -12,7 +12,7 @@ class Config(object):
     APPLICATION_NAME = os.getenv('APPLICATION_NAME', 'hookap')
     APPLICATION_ROOT = os.getenv('APPLICATION_ROOT', '/hookap')
     DEBUG = (os.getenv('FK_DEBUG', 'True') == 'True')
-    APP_MODE = os.getenv('FK_APP_MODE', 'TEST')
+    APP_MODE = os.getenv('FK_APP_MODE', 'DEV')
     SYSLOG_URL = os.getenv('FK_SYSLOG_URL', 'syslog.kfsyscc.org')
     SYSLOG_PORT = int(os.getenv('FK_SYSLOG_PORT', '5509'))
     JSON_AS_ASCII = False
