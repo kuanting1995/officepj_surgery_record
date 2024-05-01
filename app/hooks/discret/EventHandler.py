@@ -170,7 +170,7 @@ def toImage(html):
             "html": html
         }
         headers={ 'Content-Type': 'application/json'}
-        content = call_api_default(uri= URI, payload= json.dumps(req_data), headers= headers, timeout=15)
+        content = call_api_default(uri= URI, payload= json.dumps(req_data), headers= headers, timeout=30)
         return content
 
     except Exception as e:
