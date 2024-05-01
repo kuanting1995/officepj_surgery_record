@@ -21,30 +21,6 @@ RUN apt-get update  && \
 RUN /usr/local/bin/python -m pip install --upgrade pip 
 RUN pip install -U pip setuptools==57.5.0
 
-# RUN ln -snf /opt/app/tnsnames.ora $ORACLE_HOME/network/admin/tnsnames.ora
-
-#安裝CHROME and chrome driver
-COPY ./plugin/google-chrome-stable_current_amd64_104-0-5112-102.deb /opt/app
-COPY ./plugin/chromedriver_linux64_CHROME_104.zip /opt/app
-# 安裝 gnupg 和其他必需的系統依賴項
-RUN apt-get update && apt-get install -y \
-    wget \
-    fonts-wqy-zenhei \
-    gnupg \
-    unzip \
-    && rm -rf /var/lib/apt/lists/*
-
-# 添加 Google Chrome 的官方存儲庫並安裝 Chrome
-RUN apt-get update && apt-get install -y /opt/app/google-chrome-stable_current_amd64_104-0-5112-102.deb \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm /opt/app/google-chrome-stable_current_amd64_104-0-5112-102.deb
-
-# # 下載並安裝 ChromeDriver
-RUN unzip /opt/app/chromedriver_linux64_CHROME_104.zip -d /usr/local/bin/ \
-    && rm /opt/app/chromedriver_linux64_CHROME_104.zip
-# 設置無頭 Chrome 的環境變量
-ENV DISPLAY=:99
-
 
 RUN pip install -r /opt/app/requirements.txt 
  

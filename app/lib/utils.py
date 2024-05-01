@@ -152,6 +152,29 @@ class TLSAdapter(requests.adapters.HTTPAdapter):
                 ssl_context=ctx
                 )
 
+def call_api_default(uri, payload, headers={ 'Content-Type': 'application/json' }, timeout=12, retries=3, datafiles = None):
+    try:
+        requests.adapters.DEFAULT_RETRIES = retries #重連次數 
+        s = requests.session()
+        try:
+            isHttps = uri.index('https://')
+            if(isHttps == 0):
+                s.mount('https://', TLSAdapter())
+        except Exception as e:
+            pass
+            #logger.info('call_api_mount:{0}'.format(str(e)))
+        
+        s.keep_alive = False # 關閉多餘連結
+        r = s.post(uri, headers=headers, data=payload, timeout= timeout, files = datafiles).content
+        return r
+    except Exception as e: 
+        logger.error('call_api:{0}'.format(str(e)))
+        return None
+    finally:
+        # 關閉請求 釋放內存
+        s.close()
+        del(s) 
+
 def call_api(uri, payload, headers={ 'Content-Type': 'application/json' }, timeout=12, retries=3, datafiles = None):
     try:
         requests.adapters.DEFAULT_RETRIES = retries #重連次數 
@@ -175,6 +198,8 @@ def call_api(uri, payload, headers={ 'Content-Type': 'application/json' }, timeo
         # 關閉請求 釋放內存
         s.close()
         del(s)
+        
+       
        
 
 def call_api_get(uri, headers={ 'Content-Type': 'application/json' }, timeout=12, retries=3):

@@ -2,11 +2,11 @@
 from flask import Flask, request, jsonify
 import requests
 from ..route import api_route 
+import json
 from  settings import Config
 from lib.Checker import isNationalIdentificationNumberValid, is8Num, is4Num, isNone
 from hooks.utils import sendFlexMsgToUser, sendTextMsgToUser, upload_image
-from lib.utils import call_api_get
-from selenium import webdriver
+from lib.utils import call_api_default
 from urllib.parse import parse_qs
 from datetime import datetime
 from lib.logger import logger
@@ -54,10 +54,6 @@ class BotEventHandler:
             sendTextMsgToUser(user, '無法判斷btn行為', self.AccessToken )
  
 from .DiscertSignNotify import get_DiagCertificate, makeFlexMsg_DecertPreview
-from io import BytesIO
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.service import Service
-
 
 def is_overtime(dtimestamp):
     now = datetime.now()
@@ -164,6 +160,24 @@ def delete_discert(caller, data):
     else:
         sendTextMsgToUser(user, '診斷書已刪除', caller.AccessToken)
         
+        
+        
+
+def toImage(html):
+    try:
+        URI = "{0}/selenium-sv/api/discret/html2img".format(Config.K8S2_URL)
+        req_data = {
+            "html": html
+        }
+        headers={ 'Content-Type': 'application/json'}
+        content = call_api_default(uri= URI, payload= json.dumps(req_data), headers= headers, timeout=15)
+        return content
+
+    except Exception as e:
+        logger.error('toImage: {0}'.format(str(e))) 
+        return None
+
+
 def preview_discert(caller, data):
     now = datetime.now()
     ts = now.timestamp()
@@ -187,35 +201,7 @@ def preview_discert(caller, data):
     
     cert = get_DiagCertificate(docno, certno)
     if(not isNone(cert) and not isNone(cert[0]['HTML'])):
-        options = webdriver.ChromeOptions()
-        # options.add_argument("--headless")  # 選擇無頭模式運行
-        options.headless = True
-         
-        
-        options.add_argument("--headless")  # 啟用無頭模式
-        options.add_argument("--disable-gpu")  # 禁用 GPU 硬件加速
-        options.add_argument("--no-sandbox")  # 禁用沙盒（在 Docker 和某些 Linux 環境下運行時需要）
-        options.add_argument("--disable-dev-shm-usage")  # 禁用 /dev/shm 使用
-        options.add_argument("--remote-debugging-port=9222")  # 設置遠程調試端口
-
-        if(Config.APP_MODE == 'DEV'):
-            service = Service(ChromeDriverManager().install())  
-        else:
-            # 如果是在 Docker 容器中運行，確保指定 binary 路徑
-            options.binary_location = "/usr/bin/google-chrome"
-            service = Service(executable_path="/usr/local/bin/chromedriver")  # 替換為實際的 ChromeDriver 路徑
-              
-
-        
-        driver = webdriver.Chrome(service=service, options=options)  
-        driver.set_window_size(794, 1122)
-        driver.get("data:text/html;charset=UTF-8,{html_content}".format(html_content=cert[0]['HTML']))
-        driver.execute_script("document.body.style.fontFamily = 'WenQuanYi Zen Hei';")
-         
-        # Set the size of the window to capture full page
-        # 獲取截圖為 PNG 格式的字節數據
-        screenshot_as_bytes = driver.get_screenshot_as_png()  # 返回截圖的字節數據
-        driver.quit()
+        screenshot_as_bytes =  toImage(cert[0]['HTML'])
         imageid = upload_image(screenshot_as_bytes, caller.AccessToken)
         # -將image傳送給user
         msg = makeFlexMsg_DecertPreview(cert[0]['PAT_NAME'] ,imageid)
