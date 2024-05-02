@@ -128,7 +128,7 @@ def comfirm_discert(caller, data):
     elif(not isNone(cert) and cert[0]['DOC_NO'] != emp['EMP_NO']):
         sendTextMsgToUser(user, '人員身份認證錯誤無法簽章', caller.AccessToken)
     else:
-        sendTextMsgToUser(user, '診斷書已確認', caller.AccessToken)
+        sendTextMsgToUser(user, '診斷書已確認!', caller.AccessToken)
 
 def delete_discert(caller, data):
     now = datetime.now()
