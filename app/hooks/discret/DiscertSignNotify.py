@@ -53,10 +53,14 @@ def _sendDiscertSignNotify(args):
         if(not isNone(cert)):
             cert[0]['_id']  = str(uuid.uuid4())
             msg = makeFlexMsg(cert[0])
-            # teamApiResult = sendFlexMsgToUser(args['USER_INFO']['AD_ACCOUNT'].lower(), msg,  CHANNEL_ACCESS_TOKEN)
-            teamApiResult = sendFlexMsgToUser('linhui', msg,  CHANNEL_ACCESS_TOKEN)
-            teamApiResult = sendFlexMsgToUser('butterfly', msg,  CHANNEL_ACCESS_TOKEN)
-            teamApiResult = sendFlexMsgToUser('jerry06111', msg,  CHANNEL_ACCESS_TOKEN)
+            if(Config.APP_MODE != 'PRODUCTION'):
+                teamApiResult = sendFlexMsgToUser('linhui', msg,  CHANNEL_ACCESS_TOKEN)
+                teamApiResult = sendFlexMsgToUser('butterfly', msg,  CHANNEL_ACCESS_TOKEN)
+                teamApiResult = sendFlexMsgToUser('jerry06111', msg,  CHANNEL_ACCESS_TOKEN)
+            else:
+                teamApiResult = sendFlexMsgToUser(args['USER_INFO']['AD_ACCOUNT'].lower(), msg,  CHANNEL_ACCESS_TOKEN)
+          		
+
             
             response_data['data'] = teamApiResult
             response_data['status'] = False if("MessageSN" not in teamApiResult) else True
