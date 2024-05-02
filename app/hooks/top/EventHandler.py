@@ -6,7 +6,6 @@ from  settings import Config
 from lib.Checker import isNationalIdentificationNumberValid, is8Num, is4Num, isNone
 from hooks.utils import sendFlexMsgToUser, sendTextMsgToUser, upload_image
 from lib.utils import call_api_get
-from selenium import webdriver
 from urllib.parse import parse_qs
 from datetime import datetime
 from lib.logger import logger

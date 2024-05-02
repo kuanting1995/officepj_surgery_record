@@ -55,6 +55,9 @@ def _sendDiscertSignNotify(args):
             msg = makeFlexMsg(cert[0])
             # teamApiResult = sendFlexMsgToUser(args['USER_INFO']['AD_ACCOUNT'].lower(), msg,  CHANNEL_ACCESS_TOKEN)
             teamApiResult = sendFlexMsgToUser('linhui', msg,  CHANNEL_ACCESS_TOKEN)
+            teamApiResult = sendFlexMsgToUser('butterfly', msg,  CHANNEL_ACCESS_TOKEN)
+            teamApiResult = sendFlexMsgToUser('jerry06111', msg,  CHANNEL_ACCESS_TOKEN)
+            
             response_data['data'] = teamApiResult
             response_data['status'] = False if("MessageSN" not in teamApiResult) else True
             response_data['message'] = teamApiResult['MessageSN'] if('MessageSN' in teamApiResult) else teamApiResult['message']
