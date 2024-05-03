@@ -1,4 +1,3 @@
-
 import json
 from lib.cacheUtils import cache
 from settings import Config
@@ -134,14 +133,14 @@ def get_user_info_by_ad(ad):
 
 # 獲取病人基本資料
 @cache.memoize(600)
-def get_med_info(pat_id, userid):
+def get_med_info(pat_id):
     rs = None
     try:
         URI = "{0}/slight/api/nis/inp/GetInpInfo".format(Config.K8S_URL)
         # 資料"PID":"5902","USER_ID":"004909",
         req_data = {
             "PID": pat_id,
-            "USER_ID": userid
+            "USER_ID": "004909"
         }
         headers={ 'Content-Type': 'application/json'}
         content = call_api(uri= URI, payload= json.dumps(req_data), headers= headers)
@@ -249,3 +248,65 @@ def get_vitalsignData(chartno,searchdate,intervaldays):
         logger.error('get_vitalSignData: {0}'.format(str(e))) 
         return None
     return rs['data']
+
+# 獲得檢驗檢查summary
+def get_Lab(top,chartno):
+    rs = None
+    try:
+        # URI = "http://127.0.0.1:5000/slight/api/teamplus/GetLab"=>測試
+        URI = "{0}/slight/api/teamplus/GetLab".format(Config.K8S_URL)
+        req_data = {
+            "Top":top,
+            "Chartno": chartno
+        }
+        headers={ 'Content-Type': 'application/json'}
+        content = call_api(uri= URI, payload= json.dumps(req_data), headers= headers)
+        if(not isNone(content) ):
+            rs = json.loads(content)
+    except Exception as e:
+        logger.error('get_Lab: {0}'.format(str(e))) 
+        return None
+    return rs['data']
+
+
+# 1.由top api獲得檢驗檢查 details 2.篩選日期前5筆並處理成需要的格式
+
+def get_LabDetails(chartno, category, date):
+    rs = None
+    try:
+        URI = "https://ing.kfsyscc.org/topapi/exam/lab_period/{0}/{1}".format(chartno, category)
+        req_data = {
+            "Chartno": chartno,
+            "Category": category
+        }
+        headers = {'Content-Type': 'application/json'}
+        content = call_api(uri=URI, payload=json.dumps(req_data), headers=headers)
+        if content:
+            rs = json.loads(content)
+            
+            # 1.從rs['das']篩選含date的最新4筆日期
+            latest_4_dates = []
+            if date in rs['das']:
+                latest_4_dates = sorted([d for d in rs['das'] if d <= date], reverse=True)[:4]
+            else:
+                latest_4_dates = sorted([d for d in rs['das'] if d < date], reverse=True)[:4]
+                
+            # 2.抓出所有name 並將latest_4_dates中有值的填入name下
+            # 建立一個以 name 為 key 的字典，並初始化所有日期的值為空字符串
+            rows_dict = {row['name']: {date: '-' for date in latest_4_dates} for row in rs['rows']}
+
+            # 更新字典中的值
+            for row in rs['rows']:
+                for date in latest_4_dates:
+                    if date in row:
+                        rows_dict[row['name']][date] = row[date][0][1]
+
+            # 轉換為需要的格式
+            result_data = [{'name': name, **dates} for name, dates in rows_dict.items()]
+            return {
+                "latest_4_dates": latest_4_dates,
+                "result_data": result_data
+            }
+    except Exception as e:
+        logger.error('get_LabDetails: {0}'.format(str(e))) 
+        return None

@@ -9,7 +9,7 @@ from settings import Config
 
 """
 帶入data生成linechart image
-使用python內建套件subprocess執行highchart-server功能,須先載nodejs和 npm highchart-server
+使用python內建套件subprocess執行highchart-server功能,須先載nodejs和 npm high    chart-server
 highchart-server未提供圖片binary,要先用tempfile存並轉binary,再轉成base64才能用json格式傳送
 """
 
@@ -193,8 +193,8 @@ def create_VitalSignChart(data):
     
     url = "{0}/export".format(Config.HIGHCHARTS_SERVER)
     # 发送 POST 请求到 Export Server
-    response = requests.post(url, json={"options": options, "type": "png"}, timeout=(5, 30))     
-  
+    response = requests.post(url, json={"options": options, "type": "png"})     
+    # print(response)     
     if response.status_code == 200:
         return response.content
     else:
@@ -202,11 +202,3 @@ def create_VitalSignChart(data):
 
  
 
-
-
-# 生成图表
-# create_chart()
-# import datetime
-# now = datetime.datetime.now()
-# output_file = "/home/dev/folder/linechart_{:%Y_%m_%d_%H_%M_%S}.png".format(now) 存在mongodb....?
-# create_chart(x_categories, data_temp, data_pulse, data_resp, data_sbp, data_dbp, data_arearange, output_file)

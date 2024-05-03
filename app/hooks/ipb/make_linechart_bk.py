@@ -224,11 +224,3 @@ def create_VitalSignChart(data):
 
     return image_data
 
-
-
-# 生成图表
-# create_chart()
-# import datetime
-# now = datetime.datetime.now()
-# output_file = "/home/dev/folder/linechart_{:%Y_%m_%d_%H_%M_%S}.png".format(now) 存在mongodb....?
-# create_chart(x_categories, data_temp, data_pulse, data_resp, data_sbp, data_dbp, data_arearange, output_file)
