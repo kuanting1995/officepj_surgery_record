@@ -74,7 +74,7 @@ def initial_app():
     CORS(app) # Cross-Origin Resource Sharing
     initial_cache(app) 
     initialize_route(app)
-    logger.info(' Listening at: http://localhost:5001')
+    logger.info(' Listening at: http://localhost:5000')
 
 
 if __name__ != "__main__":

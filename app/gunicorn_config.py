@@ -30,7 +30,7 @@ from settings import Config
 #
 
 
-bind = os.getenv('GUNICORN_BIND', '0.0.0.0:5001')
+bind = os.getenv('GUNICORN_BIND', '0.0.0.0:5000')
 
 backlog = 500
 
