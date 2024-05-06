@@ -243,10 +243,13 @@ class ChatBotFSM:
             # lab_details = get_LabDetails('06632459', 'H', '20240503')
             lab_details = get_LabDetails(chartno, category, date)
             # print('lab_details',lab_details)
-            msg = makeFlexMsg_LabDetails(patname, category, lab_details)
-            # msg = make_test()
-            # print('msg',msg)
-            sendFlexMsgToUser(user, msg)
+            if(isNone(lab_details)):
+                send_message(user, '查無資料')
+            else:
+                msg = makeFlexMsg_LabDetails(patname, category, lab_details)
+                # msg = make_test()
+                # print('msg',msg)
+                sendFlexMsgToUser(user, msg)
             
         return handler
     

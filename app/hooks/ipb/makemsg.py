@@ -51,7 +51,6 @@ def makeFlexMsg_LabDetails(patname, category, lab_details):
                 break
         return ds
 
-
     latest_4_dates = lab_details['latest_4_dates']
     formatted_date_s = format_date_list(latest_4_dates)
 
