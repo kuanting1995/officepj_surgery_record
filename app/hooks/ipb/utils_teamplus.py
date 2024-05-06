@@ -4,7 +4,7 @@ from  settings import Config
 import base64
 
 
-CHANNEL_ACCESS_TOKEN = Config.TEST_IPB_CHANNEL_ACCESS_TOKEN
+CHANNEL_ACCESS_TOKEN = Config.IPB_CHANNEL_ACCESS_TOKEN
 
 # 傳Flex Messages給user
 def sendFlexMsgToUser(user,msg):

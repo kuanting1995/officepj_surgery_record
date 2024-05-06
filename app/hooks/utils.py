@@ -133,14 +133,14 @@ def get_user_info_by_ad(ad):
 
 # 獲取病人基本資料
 @cache.memoize(600)
-def get_med_info(pat_id):
+def get_med_info(pat_id, userid):
     rs = None
     try:
         URI = "{0}/slight/api/nis/inp/GetInpInfo".format(Config.K8S_URL)
         # 資料"PID":"5902","USER_ID":"004909",
         req_data = {
             "PID": pat_id,
-            "USER_ID": "004909"
+            "USER_ID": userid
         }
         headers={ 'Content-Type': 'application/json'}
         content = call_api(uri= URI, payload= json.dumps(req_data), headers= headers)
@@ -309,4 +309,23 @@ def get_LabDetails(chartno, category, date):
             }
     except Exception as e:
         logger.error('get_LabDetails: {0}'.format(str(e))) 
+        return None
+    
+    
+@cache.memoize(60)  
+def emrlog(empno, cNo, pgid, memo):
+    try:
+        URI = "{0}/topapi/staff/emrlog".format(Config.K8S_URL)
+        # 資料
+        req_data = {
+            "empno": empno,
+            "chartno": cNo,
+            "prog": pgid,
+            "memo": memo
+        }
+        headers={ 'Content-Type': 'application/json'}
+        return call_api(uri= URI, payload= json.dumps(req_data), headers= headers, timeout=5)
+
+    except Exception as e: 
+        logger.error('emrlog: {0}'.format(str(e))) 
         return None

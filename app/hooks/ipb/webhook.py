@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 import requests
 from ..route import api_route 
 from  settings import Config
-from lib.Checker import isNationalIdentificationNumberValid, is8Num, is4Num
+from lib.Checker import isNationalIdentificationNumberValid, is8Num, is4Num, isNone
 from hooks.utils import get_med_info,get_vitalsignData,get_activeorder_all,get_Lab,get_LabDetails
 from hooks.ipb.makemsg import makeFlexMsg_PatBaseInfo,makeFlexMsg_OrderDetails,makeFlexMsg_VitalSignChart,makeFlexMsg_Lab,makeFlexMsg_LabDetails
 from hooks.ipb.utils_teamplus import send_message, sendFlexMsgToUser, upload_image
@@ -11,17 +11,33 @@ from hooks.ipb.make_linechart import create_VitalSignChart
 import uuid
 from urllib.parse import parse_qs
 from datetime import datetime
+from hooks.utils import emrlog,  get_user_info_by_ad, sendTextMsgToUser
+from lib.logger import logger
 
 # demo:https://ing2.kfsyscc.org/hookap/hooks/ipb/webhook 
 # 地端測試：http://172.21.42.22:5001/hookap/hooks/ipb/webhook
 
-CHANNEL_ACCESS_TOKEN = Config.TEST_IPB_CHANNEL_ACCESS_TOKEN
+CHANNEL_ACCESS_TOKEN = Config.IPB_CHANNEL_ACCESS_TOKEN
 
 @api_route(rule = '', params=None ,methods=['POST', 'GET'])
 def _webhook():
     if not request.data:
         return "Webhook received!"
     data = request.json
+    
+    data['empInfo'] = None
+    uid = data['events'][0]['source']['userId']
+    
+    emp = get_user_info_by_ad(uid)
+    if(isNone(emp) or (not emp['status']) or isNone(emp['data']) ):
+        msg= "未授權的使用者"
+        sendTextMsgToUser(uid, msg, CHANNEL_ACCESS_TOKEN) 
+        logger.error(msg)
+        return msg
+    else:
+        data['empInfo'] = emp['data']    
+    
+    
     bot.handle_event(data['events'][0]['type'], data)
     return data
 
@@ -65,7 +81,7 @@ class ChatBotFSM:
             # 判斷是否為手機/病例號格式
             if isNationalIdentificationNumberValid(req_text) or is8Num(req_text) or is4Num(req_text):
                 try:
-                    rs = get_med_info(req_text)
+                    rs = get_med_info(req_text, data['empInfo']['EMP_NO'])
                     # print('patinfo',rs)
                     obj = rs['data']
                     # 隨機產生uuid碼
@@ -75,6 +91,8 @@ class ChatBotFSM:
                     msg = sendFlexMsgToUser(user, PatBaseInfomsg)
                     obj["messageSN"] = msg['MessageSN']
                     save_to_db(obj)
+                    if(not isNone(rs)):
+                        emrlog(data['empInfo']['EMP_NO'], obj['CHART_NO'], 'teampluse_ipb', '住院病人服務頻道,病人資訊查詢')
                 except Exception as e:
                     print(str(e))
                     send_message(user, '查無病人資料')
