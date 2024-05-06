@@ -274,7 +274,7 @@ def get_Lab(top,chartno):
 def get_LabDetails(chartno, category, date):
     rs = None
     try:
-        URI = "https://ing.kfsyscc.org/topapi/exam/lab_period/{0}/{1}".format(chartno, category)
+        URI = "{0}/topapi/exam/lab_period/{1}/{2}".format(Config.K8S_URL, chartno, category)
         req_data = {
             "Chartno": chartno,
             "Category": category

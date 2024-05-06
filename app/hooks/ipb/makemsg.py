@@ -10,11 +10,51 @@ def format_date(date_str):
     return datetime.strftime(date_obj, '%m/%d')
 
 def makeFlexMsg_LabDetails(patname, category, lab_details):
+    def format_date_list(latest_4_dates):
+        ds = []
+        for i in range(len(latest_4_dates)-1, -1, -1):
+            formatted_date = format_date(latest_4_dates[i])
+            ds.append(
+                         {
+                            "type": "text",
+                            "text": formatted_date,
+                            "align": "center",
+                            "fontColor": "#373737",
+                            "fontSize": 15,
+                            "fontStyle": "normal",
+                            "fontWeight": 400,
+                            "marginTop": 10
+                        },				
+			)
+            if(len(ds) == 4):
+                break
+        return ds
 
-    formatted_date_0 = format_date(lab_details['latest_4_dates'][0])
-    formatted_date_1 = format_date(lab_details['latest_4_dates'][1])
-    formatted_date_2 = format_date(lab_details['latest_4_dates'][2])
-    formatted_date_3 = format_date(lab_details['latest_4_dates'][3])
+    def lab_details_list(item, latest_4_dates):
+        ds = []
+        for i in range(len(latest_4_dates)-1, -1, -1):
+            
+            txt = item.get(latest_4_dates[i], "")
+            ds.append(
+				{
+                    "type": "text",
+                    "text":  txt,
+                    "align": "center",
+                    "fontColor": "#373737",
+                    "fontSize": 15,
+                    "fontStyle": "normal",
+                    "fontWeight": 400,
+                    "marginTop": 10
+                },				
+			)
+            if(len(ds) == 4):
+                break
+        return ds
+
+
+    latest_4_dates = lab_details['latest_4_dates']
+    formatted_date_s = format_date_list(latest_4_dates)
+
     
     msg = {
         "type": "flex",
@@ -56,47 +96,8 @@ def makeFlexMsg_LabDetails(patname, category, lab_details):
                             "fontWeight": 400,
                             "marginTop": 10
                         },
-                         {
-                            "type": "text",
-                            "text": formatted_date_3,
-                            "align": "center",
-                            "fontColor": "#373737",
-                            "fontSize": 15,
-                            "fontStyle": "normal",
-                            "fontWeight": 400,
-                            "marginTop": 10
-                        },
-                        {
-                            "type": "text",
-                            "text": formatted_date_2,
-                            "align": "center",
-                            "fontColor": "#373737",
-                            "fontSize": 15,
-                            "fontStyle": "normal",
-                            "fontWeight": 400,
-                            "marginTop": 10
-                        },
-                        {
-                            "type": "text",
-                            "text": formatted_date_1,
-                            "align": "center",
-                            "fontColor": "#373737",
-                            "fontSize": 15,
-                            "fontStyle": "normal",
-                            "fontWeight": 400,
-                            "marginTop": 10
-                        },
-                        {
-                            "type": "text",
-                            "text": formatted_date_0,
-                            "align": "center",
-                            "fontColor": "#373737",
-                            "fontSize": 15,
-                            "fontStyle": "normal",
-                            "fontWeight": 400,
-                            "marginTop": 10
-                        }
-                    ],
+                         
+                    ]+ formatted_date_s,
                     "borderColor": "#DCDCDC",
                     "borderWidth": 1,
                     "paddingStart": 10,
@@ -105,9 +106,11 @@ def makeFlexMsg_LabDetails(patname, category, lab_details):
             ]
         }
     }
-
+    
     for item in lab_details['result_data'][:28]:
-        # print('item', item)
+
+        lab_details = lab_details_list(item, latest_4_dates)
+        
         new_container = {
             "type": "bodycontainer",
             "contents": [
@@ -121,54 +124,13 @@ def makeFlexMsg_LabDetails(patname, category, lab_details):
                     "fontWeight": 400,
                     "marginTop": 10
                 },
-                {
-                    "type": "text",
-                    "text":  item.get(lab_details['latest_4_dates'][3], ""),
-                    "align": "center",
-                    "fontColor": "#373737",
-                    "fontSize": 15,
-                    "fontStyle": "normal",
-                    "fontWeight": 400,
-                    "marginTop": 10
-                },
-                {
-                    "type": "text",
-                    "text":  item.get(lab_details['latest_4_dates'][2], ""),
-                    "align": "center",
-                    "fontColor": "#373737",
-                    "fontSize": 15,
-                    "fontStyle": "normal",
-                    "fontWeight": 400,
-                    "marginTop": 10
-                },
-                  {
-                    "type": "text",
-                    "text":  item.get(lab_details['latest_4_dates'][1], ""),
-                    "align": "center",
-                    "fontColor": "#373737",
-                    "fontSize": 15,
-                    "fontStyle": "normal",
-                    "fontWeight": 400,
-                    "marginTop": 10
-                },
-                  {
-                    "type": "text",
-                    "text":  item.get(lab_details['latest_4_dates'][0], ""),
-                    "align": "center",
-                    "fontColor": "#373737",
-                    "fontSize": 15,
-                    "fontStyle": "normal",
-                    "fontWeight": 400,
-                    # "bgcolor": "#b5b398",
-		            "marginTop": 10
-                }
-            ],
+                
+            ]+lab_details,
             "borderColor": "#DCDCDC",
             "borderWidth": 1,
             "paddingStart": 10,
             "paddingEnd": 10
         }
-        
         msg['contents']['body'].append(new_container)
 
     return msg
