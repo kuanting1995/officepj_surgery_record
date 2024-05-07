@@ -274,6 +274,7 @@ def get_vitalsignData(chartno,searchdate,intervaldays):
     return rs['data']
 
 # 獲得檢驗檢查summary
+@cache.memoize(300)  
 def get_Lab(top,chartno):
     rs = None
     try:
@@ -294,7 +295,7 @@ def get_Lab(top,chartno):
 
 
 # 1.由top api獲得檢驗檢查 details 2.篩選日期前5筆並處理成需要的格式
-
+@cache.memoize(300)
 def get_LabDetails(chartno, category, date):
     rs = None
     try:
@@ -338,18 +339,19 @@ def get_LabDetails(chartno, category, date):
     
 @cache.memoize(60)  
 def emrlog(empno, cNo, pgid, memo):
-    try:
-        URI = "{0}/topapi/staff/emrlog".format(Config.K8S_URL)
-        # 資料
-        req_data = {
-            "empno": empno,
-            "chartno": cNo,
-            "prog": pgid,
-            "memo": memo
-        }
-        headers={ 'Content-Type': 'application/json'}
-        return call_api(uri= URI, payload= json.dumps(req_data), headers= headers, timeout=5)
+    if(Config.APP_MODE == "PRODUCTION"):
+        try:
+            URI = "{0}/topapi/staff/emrlog".format(Config.K8S_URL)
+            # 資料
+            req_data = {
+                "empno": empno,
+                "chartno": cNo,
+                "prog": pgid,
+                "memo": memo
+            }
+            headers={ 'Content-Type': 'application/json'}
+            return call_api(uri= URI, payload= json.dumps(req_data), headers= headers, timeout=5)
 
-    except Exception as e: 
-        logger.error('emrlog: {0}'.format(str(e))) 
-        return None
+        except Exception as e: 
+            logger.error('emrlog: {0}'.format(str(e))) 
+    return None        
