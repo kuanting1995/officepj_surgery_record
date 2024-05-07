@@ -88,9 +88,9 @@ backlog = 500
 workers = os.getenv('GUNICORN_WORKERS', Config.G_WORKERS)
 
 # --max-requests 的適合值可能會根據你的應用程式特性和工作負載有所不同。這個選項的主要目的是防止長期運行的 worker 因為可能的記憶體洩漏而消耗過多的資源。
-max_requests =1000 
+max_requests =100 
 # --max-requests-jitter 是 Gunicorn 的一個設定選項，用於在 --max-requests 的基礎上添加一些隨機變化。此選項的目的是防止所有 worker 在同一時間重啓。
-max_requests_jitter=100
+max_requests_jitter=10
 
 #處理請求的工作線程數，使用指定數量的線程運行每個worker。為正整數，默認為1。
 #--threads 参数只会影响到 gthread worker class, 其他的 worker 是不受这个参数影响的
