@@ -142,12 +142,12 @@ def makeFlexMsg_LabDetails(patname, category, lab_details):
 # {"B": "#DCDCDC","C": "#C0F7A4","E": "#FDF6C0","eC": "#FDF6C0", "H": "#FFCDD2","I": "#B3E5FC","IM": "#B3E5FC","M": "#FFFAFA","S": "#D8B598","T": "#F5DEB3","U": "#F0E68C","D": "#FFFAFA"} 
 # 重整labdata格式:1.sys_date日期改為04/29格式 2.tests E改為=>eC,I=>IM 3.加入對應色彩color_mapping
 def reformat_data(lab_details):
-    color_mapping = {"B": "#878787","C": "#44C200","E": "#FDF6C0","eC": "#FDF6C0", "H": "#F34A4A","I": "#4E8CCF","IM": "#4E8CCF","M": "#FEA2A2","S": "#D8B598","T": "#FBCA62","U": "#C5CB05","D": "#FFFAFA"}
+    color_mapping = {"B": "#878787","C": "#44C200","E": "#EAE273","eC": "#EAE273", "H": "#F34A4A","I": "#4E8CCF","IM": "#4E8CCF","M": "#FEA2A2","S": "#D8B598","T": "#E5B95B","U": "#C5CB05","D": "#FFFAFA"}
     result = []
     for data in lab_details:
         sys_date = datetime.strptime(data["SYS_DATE"], '%Y%m%d').strftime('%m/%d')
         original_tests = [key for key in data.keys() if key != "SYS_DATE"]
-        tests = [key if key != 'E' and key != 'I' else 'eC' if key == 'E' else 'I' for key in original_tests]
+        tests = [key if key != 'E' and key != 'I' else 'E' if key == 'E' else 'I' for key in original_tests]
         tests_with_color = {tests[i]: str(data[original_tests[i]]) + ', ' + color_mapping.get(original_tests[i], "#colorcode") for i in range(len(tests))} 
         result.append({"date": sys_date, "org_sys_date": data["SYS_DATE"],"tests": tests_with_color})
     return result

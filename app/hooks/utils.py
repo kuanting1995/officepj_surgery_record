@@ -280,6 +280,7 @@ def get_Lab(top,chartno):
     try:
         # URI = "http://127.0.0.1:5000/slight/api/teamplus/GetLab"=>測試
         URI = "{0}/slight/api/teamplus/GetLab".format(Config.K8S_URL)
+        print(URI)
         req_data = {
             "Top":top,
             "Chartno": chartno
