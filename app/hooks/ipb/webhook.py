@@ -22,6 +22,7 @@ CHANNEL_ACCESS_TOKEN = Config.IPB_CHANNEL_ACCESS_TOKEN
 @api_route(rule = '', params=None ,methods=['POST', 'GET'])
 def _webhook():
     if not request.data:
+        emp = get_user_info_by_ad('linhui')
         return "Webhook received!"
     data = request.json
     
@@ -29,14 +30,18 @@ def _webhook():
     uid = data['events'][0]['source']['userId']
     
     emp = get_user_info_by_ad(uid)
-    if(isNone(emp) or (not emp['status']) or isNone(emp['data']) ):
+    if(isNone(emp)):
         msg= "未授權的使用者"
         sendTextMsgToUser(uid, msg, CHANNEL_ACCESS_TOKEN) 
         logger.error(msg)
         return msg
+    elif (not isNone(emp) and not emp['data']['IS_TOP_ROLE']):
+        msg= "您沒有TOP權限，無法查詢"
+        sendTextMsgToUser(uid, msg, CHANNEL_ACCESS_TOKEN) 
+        logger.error(msg)
+        return msg        
     else:
         data['empInfo'] = emp['data']    
-    
     
     bot.handle_event(data['events'][0]['type'], data)
     return data

@@ -66,6 +66,8 @@ def updateFlexFooter(msgID, username, finalMsg, accessToken):
     x = requests.post(url, headers=headers, json=data)
     return x.json()
 
+
+
 # 上傳image至 team+ server, 收到回傳token
 @cache.memoize(86400)  
 def upload_image(image_data, accessToken):
@@ -85,6 +87,23 @@ def upload_image(image_data, accessToken):
     }
     x = requests.post(url, headers=headers, json=payload, timeout=15)
     return x.json()
+
+
+
+
+@cache.memoize(3600)  
+def is_top_role(user_id):
+    rs = None
+    try:
+        URI = "{0}/{1}".format(Config.TOP_ROLE_SERVER, user_id)
+        headers={ 'Content-Type': 'application/json'}
+        content = call_api_get(uri= URI, headers= headers, timeout=5)
+        if(not isNone(content) ):
+            rs = json.loads(content)
+    except Exception as e: 
+        logger.error('is_top_role: {0}'.format(str(e))) 
+        return None
+    return rs
 
 @cache.memoize(3600)  
 def get_user_info(user_id):
@@ -127,7 +146,12 @@ def get_user_info_by_email(email):
 
 
 def get_user_info_by_ad(ad):
-    return get_user_info_by_email("{0}@kfsyscc.org".format(ad))
+    emp = get_user_info_by_email("{0}@kfsyscc.org".format(ad))
+    if(isNone(emp) or (not emp['status']) or isNone(emp['data']) ):
+        return None
+    else:
+        emp['data']['IS_TOP_ROLE'] = is_top_role(emp['data']['EMP_NO'])
+        return emp
 # note:timeout=10->呼叫一個API或者執行一個可能需要等待的操作時，有時你可能不想讓程式無限期的等待。在這種情況下，你可以設置一個超時時間。
 
 

@@ -23,6 +23,8 @@ class Config(object):
     K8S2_URL =  os.getenv('FK_K8S2_URL', 'https://ing2.kfsyscc.org')
     HIGHCHARTS_SERVER =  os.getenv('FK_HIGHCHARTS_SERVER', 'https://highcharts-server-test.kfsyscc.org')
     TEAM_SERVER =  os.getenv('FK_TEAM_SERVER', 'https://eim.kfsyscc.org')
+    TOP_ROLE_SERVER =  os.getenv('FK_TOP_ROLE_SERVER', 'https://staff.kfsyscc.org/api/python/staff-has_top_role')
+    
 
 
 #hooks token
