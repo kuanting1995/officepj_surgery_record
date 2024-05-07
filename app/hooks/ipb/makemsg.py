@@ -147,7 +147,7 @@ def reformat_data(lab_details):
     for data in lab_details:
         sys_date = datetime.strptime(data["SYS_DATE"], '%Y%m%d').strftime('%m/%d')
         original_tests = [key for key in data.keys() if key != "SYS_DATE"]
-        tests = [key if key != 'E' and key != 'I' else 'eC' if key == 'E' else 'IM' for key in original_tests]
+        tests = [key if key != 'E' and key != 'I' else 'eC' if key == 'E' else 'I' for key in original_tests]
         tests_with_color = {tests[i]: str(data[original_tests[i]]) + ', ' + color_mapping.get(original_tests[i], "#colorcode") for i in range(len(tests))} 
         result.append({"date": sys_date, "org_sys_date": data["SYS_DATE"],"tests": tests_with_color})
     return result
