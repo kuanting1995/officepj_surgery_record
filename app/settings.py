@@ -8,7 +8,7 @@ tmpdir = os.getenv('TMPDIR', '/tmp')
 
 
 class Config(object):
-    G_WORKERS = int(os.getenv('GUNICORN_WORKERS', '4'))
+    G_WORKERS = int(os.getenv('GUNICORN_WORKERS', '2'))
     APPLICATION_NAME = os.getenv('APPLICATION_NAME', 'hookap')
     APPLICATION_ROOT = os.getenv('APPLICATION_ROOT', '/hookap')
     DEBUG = (os.getenv('FK_DEBUG', 'True') == 'True')
