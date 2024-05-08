@@ -6,6 +6,7 @@ from  settings import Config
 from lib.Checker import isNationalIdentificationNumberValid, is8Num, is4Num, isNone
 from hooks.utils import get_med_info,get_vitalsignData,get_activeorder_all,get_Lab,get_LabDetails
 from hooks.ipb.makemsg import makeFlexMsg_PatBaseInfo,makeFlexMsg_OrderDetails,makeFlexMsg_VitalSignChart,makeFlexMsg_Lab,makeFlexMsg_LabDetails
+from hooks.ipb.makemsg import makeFlexMsg_List, makeFlexMsg_InPatientDocList, makeFlexMsg_InPatientListByDoc
 from hooks.ipb.utils_teamplus import send_message, sendFlexMsgToUser, upload_image
 from hooks.ipb.make_linechart import create_VitalSignChart
 import uuid
@@ -13,7 +14,7 @@ from urllib.parse import parse_qs
 from datetime import datetime
 from hooks.utils import emrlog,  get_user_info_by_ad, sendTextMsgToUser
 from lib.logger import logger
-
+from .utils import get_in_patient_doc_list, get_in_patient_by_doc
 # demo:https://ing2.kfsyscc.org/hookap/hooks/ipb/webhook 
 # 地端測試：http://172.21.42.22:5001/hookap/hooks/ipb/webhook
 
@@ -72,6 +73,7 @@ class ChatBotFSM:
             '8': self.make_orderbyclass_handler('PCA'),
             '9': self.make_orderbyclass_handler('MBD'),
             '10': self.make_orderbyclass_handler(''),
+            '11': self.make_InPatientDocList_handler()
         }
     # 判斷事件類型並執行自動回覆：user輸入文字訊息=>message,user點擊btn=>postback
     def handle_event(self, event_type, data):
@@ -83,8 +85,12 @@ class ChatBotFSM:
     def handle_message_event(self, data):
             req_text = data['events'][0]['message']['text'] 
             user = data['events'][0]['source']['userId']
+            if(req_text.strip().lower() == "list"):
+                id =str(uuid.uuid4())
+                msg = makeFlexMsg_List(id)
+                msg = sendFlexMsgToUser(user, msg)
             # 判斷是否為手機/病例號格式
-            if isNationalIdentificationNumberValid(req_text) or is8Num(req_text) or is4Num(req_text):
+            elif isNationalIdentificationNumberValid(req_text) or is8Num(req_text) or is4Num(req_text):
                 try:
                     rs = get_med_info(req_text, data['empInfo']['EMP_NO'])
                     # print('patinfo',rs)
@@ -114,7 +120,7 @@ class ChatBotFSM:
         postback_data = pars['value'][0]
         _id = pars['id'][0]
         # 點擊btn1,2
-        if postback_data in ['1','2','3','4','5','6','7','8','9','10']: 
+        if postback_data in ['1','2','3','4','5','6','7','8','9','10','11']: 
             handler = self.postback_handlers.get(postback_data)
             if handler:
                 handler(_id,data)
@@ -257,6 +263,51 @@ class ChatBotFSM:
                 sendFlexMsgToUser(user, msg)
             
         return handler
+    
+    #點擊btn "主治醫師病人清單", value="11"
+    def make_InPatientDocList_handler(self):
+
+        def handler(_id, data):
+            user = data['events'][0]['source']['userId']
+            id=str(uuid.uuid4())
+            qs = data['events'][0]['data']
+            pars = parse_qs(qs)
+            api = pars['api'][0]
+            if(api == "in_patient_doc_list"):
+                docs = get_in_patient_doc_list(data['empInfo']['EMP_NO'])
+                msg = makeFlexMsg_InPatientDocList(id, docs['data'])
+                sendFlexMsgToUser(user, msg)
+            elif(api == "in_patient_list_by_doc"):
+                docno = pars['docno'][0]
+                pats = get_in_patient_by_doc(docno)
+                msg = makeFlexMsg_InPatientListByDoc(id, pats['data'])
+                sendFlexMsgToUser(user, msg)
+            elif(api == "in_patient_info"):
+                cahrtno = pars['cahrtno'][0]
+                try:
+                    rs = get_med_info(cahrtno, data['empInfo']['EMP_NO'])
+                    # print('patinfo',rs)
+                    obj = rs['data']
+                    # 隨機產生uuid碼
+                    obj["_id"]=str(uuid.uuid4())
+                    _id = obj["_id"]
+                    PatBaseInfomsg = makeFlexMsg_PatBaseInfo(_id,obj)                    
+                    msg = sendFlexMsgToUser(user, PatBaseInfomsg)
+                    obj["messageSN"] = msg['MessageSN']
+                    save_to_db(obj)
+                    if(not isNone(rs)):
+                        emrlog(data['empInfo']['EMP_NO'], obj['CHART_NO'], 'teampluse_ipb', '住院病人服務頻道,病人資訊查詢')
+                except Exception as e:
+                    print(str(e))
+                    send_message(user, '查無病人資料')                
+                
+                
+
+            else:
+                send_message(user, '查無資料')
+                
+           
+        return handler    
     
     
 bot = ChatBotFSM()

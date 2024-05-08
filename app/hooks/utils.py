@@ -280,7 +280,6 @@ def get_Lab(top,chartno):
     try:
         # URI = "http://127.0.0.1:5000/slight/api/teamplus/GetLab"=>測試
         URI = "{0}/slight/api/teamplus/GetLab".format(Config.K8S_URL)
-        print(URI)
         req_data = {
             "Top":top,
             "Chartno": chartno
@@ -294,6 +293,8 @@ def get_Lab(top,chartno):
         return None
     return rs['data']
 
+
+IGNORE_ITEMS = ["P.O.C. Glucose"]
 
 # 1.由top api獲得檢驗檢查 details 2.篩選日期前5筆並處理成需要的格式
 @cache.memoize(300)
@@ -319,16 +320,18 @@ def get_LabDetails(chartno, category, date):
                 
             # 2.抓出所有name 並將latest_4_dates中有值的填入name下
             # 建立一個以 name 為 key 的字典，並初始化所有日期的值為空字符串
-            rows_dict = {row['name']: {date: '-' for date in latest_4_dates} for row in rs['rows']}
+            rows_dict = {row['name']: {date: '-' for date in latest_4_dates} for row in rs['rows'] if row['name'] not in IGNORE_ITEMS}
 
             # 更新字典中的值
             for row in rs['rows']:
                 for date in latest_4_dates:
                     if date in row:
-                        rows_dict[row['name']][date] = row[date][0][1]
+                        if(row['name'] not in IGNORE_ITEMS):
+                            rows_dict[row['name']][date] = row[date][0][1]
 
             # 轉換為需要的格式
             result_data = [{'name': name, **dates} for name, dates in rows_dict.items()]
+
             return {
                 "latest_4_dates": latest_4_dates,
                 "result_data": result_data

@@ -1,6 +1,7 @@
 import requests
 import json
 from datetime import datetime
+from lib.Checker import isNone
 
 
 # 檢驗檢查 Details表格
@@ -972,6 +973,189 @@ def makeFlexMsg_PatBaseInfo(_id,data):
 
 
 
+
+
+# 病人基本資料+ 查詢按鈕 x3
+def makeFlexMsg_List(_id):
+
+    msg = {
+	"type": "flex",
+	"contents": {
+		"body": [
+			{
+				"type": "bodycontainer",
+				"contents": [
+					{
+						"type": "text",
+						"text": "病人清單查詢",
+						"align": "left",
+						"fontColor": "#373737",
+						"fontSize": 18,
+						"fontStyle": "normal",
+						"fontWeight": 900,
+						"marginTop": 10
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingStart": 10,
+				"paddingEnd": 10
+			},
+			{
+				"type": "separator",
+				"height": 1,
+				"bgcolor": "#DCDCDC"
+			}
+		],
+		"footer": [
+			{
+				"type": "footercontainer",
+				"contents": [
+					{
+						"type": "postbackbutton",
+						"text": "主治醫師病人清單",
+						"style": "primary",
+						"bgcolor": "#939393",
+						"displayText": "查詢中....",
+      					"data": "value=11&api=in_patient_doc_list&id="+_id
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingStart": 10,
+				"paddingEnd": 10
+			}
+		]
+	}
+}
+    return msg
+
+
+def makeFlexMsg_InPatientDocList(_id, docList):
+    colors = ['#098C02', '#037BC9']
+    
+    def render_doc_btn(docs):
+        ds = []
+        n1 = None
+        c= True
+        for doc in docs:
+            c =  (not c) if(n1 != doc["HDEPT_NAME"]) else c
+            n1 = doc["HDEPT_NAME"]
+            d = {
+				"type": "footercontainer",
+				"contents": [
+					{
+						"type": "postbackbutton",
+						"text": "{0}-{1}".format(doc['HDEPT_NAME'], doc['NAME_CH']),
+						"style": "primary",
+						"bgcolor": colors[int(c)],
+						"displayText": "查詢中....",
+      					"data": "value=11&api=in_patient_list_by_doc&id={0}&docno={1}".format(doc['EMP_NO'], doc['EMP_NO'])
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingStart": 10,
+				"paddingEnd": 10
+			} 
+            ds.append(d)
+        return ds
+    
+    footItems = render_doc_btn(docList)
+    msg = {
+	"type": "flex",
+	"contents": {
+		"body": [
+			{
+				"type": "bodycontainer",
+				"contents": [
+					{
+						"type": "text",
+						"text": "請選擇醫師",
+						"align": "left",
+						"fontColor": "#373737",
+						"fontSize": 18,
+						"fontStyle": "normal",
+						"fontWeight": 900,
+						"marginTop": 10
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingStart": 10,
+				"paddingEnd": 10
+			},
+			{
+				"type": "separator",
+				"height": 1,
+				"bgcolor": "#DCDCDC"
+			}
+		],
+		"footer": footItems
+	}
+}
+    return msg
+
+
+
+def makeFlexMsg_InPatientListByDoc(_id, patlist):
+
+    
+    def render_pat_btn(pats):
+        ds = []
+
+        for p in pats:
+            d = {
+				"type": "footercontainer",
+				"contents": [
+					{
+						"type": "postbackbutton",
+						"text": "{0}-{1}/{2}".format(p['NOW_STATIONNO'], p['NOW_BEDNO'], p['PAT_NAME']),
+						"style": "primary",
+						"bgcolor": '#098C02',
+						"displayText": "查詢中....",
+      					"data": "value=11&api=in_patient_info&id={0}&cahrtno={1}".format(p['INP_NO'], p['CHART_NO'])
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingStart": 10,
+				"paddingEnd": 10
+			} 
+            ds.append(d)
+        return ds
+    
+    footItems = render_pat_btn(patlist)
+    msg = {
+	"type": "flex",
+	"contents": {
+		"body": [
+			{
+				"type": "bodycontainer",
+				"contents": [
+					{
+						"type": "text",
+						"text": "請選擇病人",
+						"align": "left",
+						"fontColor": "#373737",
+						"fontSize": 18,
+						"fontStyle": "normal",
+						"fontWeight": 900,
+						"marginTop": 10
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingStart": 10,
+				"paddingEnd": 10
+			},
+			{
+				"type": "separator",
+				"height": 1,
+				"bgcolor": "#DCDCDC"
+			}
+		],
+		"footer": footItems
+	}
+}
+    return msg    
+    
 # if __name__=="__main__":
 #     x = makeFlexMsgForUser("林OO", "20230424")
 #     print(json.dumps(x))
+
+
