@@ -91,7 +91,15 @@ class ChatBotFSM:
                 # msg = sendFlexMsgToUser(user, msg)
                 docs = get_in_patient_doc_list(data['empInfo']['EMP_NO'])
                 msg = makeFlexMsg_InPatientDocList(id, docs['data'])
-                sendFlexMsgToUser(user, msg)                
+                sendFlexMsgToUser(user, msg)   
+            if(req_text.strip().lower() == "mylist"):
+                id =str(uuid.uuid4())
+                pats = get_in_patient_by_doc(data['empInfo']['EMP_NO'])
+                if(isNone(pats) or isNone(pats['data'])):
+                    send_message(user, '查無病人資料')
+                else:
+                    msg = makeFlexMsg_InPatientListByDoc(id, pats['data'], pats['docInfo'])
+                    sendFlexMsgToUser(user, msg)
             # 判斷是否為手機/病例號格式
             elif isNationalIdentificationNumberValid(req_text) or is8Num(req_text) or is4Num(req_text):
                 try:
