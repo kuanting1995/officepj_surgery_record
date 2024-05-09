@@ -572,7 +572,7 @@ def makeFlexMsg_CategoryOrder(_id,obj):
 
 
 # 病人基本資料+ 查詢按鈕 x3
-def makeFlexMsg_PatBaseInfo(_id,data):
+def makeFlexMsg_PatBaseInfo(_id,data, userid):
     patName = data['PAT_NAME'] 
     charNo = data['CHART_NO']
     patidNo = data['PAT_IDNO']

@@ -92,7 +92,7 @@ class ChatBotFSM:
                 docs = get_in_patient_doc_list(data['empInfo']['EMP_NO'])
                 msg = makeFlexMsg_InPatientDocList(id, docs['data'])
                 sendFlexMsgToUser(user, msg)   
-            if(req_text.strip().lower() == "mylist"):
+            elif(req_text.strip().lower() == "mylist"):
                 id =str(uuid.uuid4())
                 pats = get_in_patient_by_doc(data['empInfo']['EMP_NO'])
                 if(isNone(pats) or isNone(pats['data'])):
@@ -109,7 +109,7 @@ class ChatBotFSM:
                     # 隨機產生uuid碼
                     obj["_id"]=str(uuid.uuid4())
                     _id = obj["_id"]
-                    PatBaseInfomsg = makeFlexMsg_PatBaseInfo(_id,obj)                    
+                    PatBaseInfomsg = makeFlexMsg_PatBaseInfo(_id,obj, data['empInfo']['EMP_NO'])                    
                     msg = sendFlexMsgToUser(user, PatBaseInfomsg)
                     obj["messageSN"] = msg['MessageSN']
                     save_to_db(obj)
@@ -302,7 +302,7 @@ class ChatBotFSM:
                     # 隨機產生uuid碼
                     obj["_id"]=str(uuid.uuid4())
                     _id = obj["_id"]
-                    PatBaseInfomsg = makeFlexMsg_PatBaseInfo(_id,obj)                    
+                    PatBaseInfomsg = makeFlexMsg_PatBaseInfo(_id,obj, data['empInfo']['EMP_NO'])                    
                     msg = sendFlexMsgToUser(user, PatBaseInfomsg)
                     obj["messageSN"] = msg['MessageSN']
                     save_to_db(obj)
