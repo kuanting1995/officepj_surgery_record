@@ -1130,7 +1130,7 @@ def makeFlexMsg_InPatientListByDoc(_id, patlist, docInfo):
 				"contents": [
 					{
 						"type": "text",
-						"text": "{0}醫師-住院病人清單".format(docInfo['NAME_CH']),
+						"text": "{0}{1}-住院病人清單".format(docInfo['NAME_CH'], docInfo['WORK_TYPE']),
 						"align": "left",
 						"fontColor": "#373737",
 						"fontSize": 18,
