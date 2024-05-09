@@ -87,8 +87,11 @@ class ChatBotFSM:
             user = data['events'][0]['source']['userId']
             if(req_text.strip().lower() == "list"):
                 id =str(uuid.uuid4())
-                msg = makeFlexMsg_List(id)
-                msg = sendFlexMsgToUser(user, msg)
+                # msg = makeFlexMsg_List(id)
+                # msg = sendFlexMsgToUser(user, msg)
+                docs = get_in_patient_doc_list(data['empInfo']['EMP_NO'])
+                msg = makeFlexMsg_InPatientDocList(id, docs['data'])
+                sendFlexMsgToUser(user, msg)                
             # 判斷是否為手機/病例號格式
             elif isNationalIdentificationNumberValid(req_text) or is8Num(req_text) or is4Num(req_text):
                 try:
@@ -280,7 +283,7 @@ class ChatBotFSM:
             elif(api == "in_patient_list_by_doc"):
                 docno = pars['docno'][0]
                 pats = get_in_patient_by_doc(docno)
-                msg = makeFlexMsg_InPatientListByDoc(id, pats['data'])
+                msg = makeFlexMsg_InPatientListByDoc(id, pats['data'], pats['docInfo'])
                 sendFlexMsgToUser(user, msg)
             elif(api == "in_patient_info"):
                 cahrtno = pars['cahrtno'][0]

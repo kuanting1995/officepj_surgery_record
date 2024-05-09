@@ -164,7 +164,7 @@ def makeFlexMsg_Lab(patname,lab_details,_id):
                     "contents": [
                         {
                             "type": "text",
-                            "text": f"病人:{patname}   檢驗檢查 (最新5筆)",
+                            "text": f"病人:{patname}   檢驗檢查 (最新4筆)",
                             "align": "left",
                             "fontColor": "#373737",
                             "fontSize": 18,
@@ -1094,7 +1094,7 @@ def makeFlexMsg_InPatientDocList(_id, docList):
 
 
 
-def makeFlexMsg_InPatientListByDoc(_id, patlist):
+def makeFlexMsg_InPatientListByDoc(_id, patlist, docInfo):
 
     
     def render_pat_btn(pats):
@@ -1130,7 +1130,7 @@ def makeFlexMsg_InPatientListByDoc(_id, patlist):
 				"contents": [
 					{
 						"type": "text",
-						"text": "請選擇病人",
+						"text": "{0}醫師-住院病人清單".format(docInfo['NAME_CH']),
 						"align": "left",
 						"fontColor": "#373737",
 						"fontSize": 18,

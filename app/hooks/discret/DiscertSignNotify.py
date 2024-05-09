@@ -50,6 +50,7 @@ def _sendDiscertSignNotify(args):
         response_data['message'] =  ''
         response_data['data'] = None
         cert = get_DiagCertificate(args['USER_INFO']['EMP_NO'], args['CertNo'])
+       
         if(not isNone(cert)):
             cert[0]['_id']  = str(uuid.uuid4())
             msg = makeFlexMsg(cert[0])

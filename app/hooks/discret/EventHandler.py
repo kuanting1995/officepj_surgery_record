@@ -116,6 +116,7 @@ def comfirm_discert(caller, data):
         return False
     msg = load_from_db(msgid)
     
+    
     if(isNone(msg) or is_overtime(msg['req_datetime'])):
         sendTextMsgToUser(user, '訊息已過期', caller.AccessToken)
         return False
@@ -124,11 +125,11 @@ def comfirm_discert(caller, data):
     cert = get_DiagCertificate(docno, certno)
     if(not isNone(cert) and not isNone(cert[0]['CONFIRM_URL']) and cert[0]['DOC_NO'] == emp['EMP_NO']):
         request_api(cert[0]['CONFIRM_URL'])
-        sendTextMsgToUser(user, '診斷書已確認', caller.AccessToken)
+        sendTextMsgToUser(user, '{0}-診斷書已確認'.format(msg['rawdata']['PAT_NAME']), caller.AccessToken)
     elif(not isNone(cert) and cert[0]['DOC_NO'] != emp['EMP_NO']):
         sendTextMsgToUser(user, '人員身份認證錯誤無法簽章', caller.AccessToken)
     else:
-        sendTextMsgToUser(user, '診斷書已確認!', caller.AccessToken)
+        sendTextMsgToUser(user, '{0}-診斷書已確認!'.format(msg['rawdata']['PAT_NAME']), caller.AccessToken)
 
 def delete_discert(caller, data):
     now = datetime.now()
@@ -146,6 +147,7 @@ def delete_discert(caller, data):
         return False
     msg = load_from_db(msgid)
     
+    
     if(isNone(msg) or is_overtime(msg['req_datetime'])):
         sendTextMsgToUser(user, '訊息已過期', caller.AccessToken)
         return False
@@ -154,11 +156,11 @@ def delete_discert(caller, data):
     if(not isNone(cert) and not isNone(cert[0]['DELETE_URL']) and cert[0]['DOC_NO'] == emp['EMP_NO']):
         request_api(cert[0]['DELETE_URL'])
  
-        sendTextMsgToUser(user, '診斷書已刪除', caller.AccessToken)
+        sendTextMsgToUser(user, '{0}-診斷書已刪除'.format(msg['rawdata']['PAT_NAME']), caller.AccessToken)
     elif(not isNone(cert) and cert[0]['DOC_NO'] != emp['EMP_NO']):
         sendTextMsgToUser(user, '人員身份認證錯誤無法刪除', caller.AccessToken)        
     else:
-        sendTextMsgToUser(user, '診斷書已刪除', caller.AccessToken)
+        sendTextMsgToUser(user, '{0}-診斷書已刪除'.format(msg['rawdata']['PAT_NAME']), caller.AccessToken)
         
         
         
