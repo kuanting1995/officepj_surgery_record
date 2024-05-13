@@ -3,10 +3,11 @@ from flask import Flask, request, jsonify
 import requests
 from ..route import api_route 
 from  settings import Config
+from lib.cacheUtils import cache
 from lib.Checker import isNationalIdentificationNumberValid, is8Num, is4Num, isNone
 from hooks.utils import get_med_info,get_vitalsignData,get_activeorder_all,get_Lab,get_LabDetails
 from hooks.ipb.makemsg import makeFlexMsg_PatBaseInfo,makeFlexMsg_OrderDetails,makeFlexMsg_VitalSignChart,makeFlexMsg_Lab,makeFlexMsg_LabDetails
-from hooks.ipb.makemsg import makeFlexMsg_List, makeFlexMsg_InPatientDocList, makeFlexMsg_InPatientListByDoc
+from hooks.ipb.makemsg import makeFlexMsg_List, makeFlexMsg_InPatientDocList, makeFlexMsg_InPatientListByDoc, makeFlexMsg_Translator
 from hooks.ipb.utils_teamplus import send_message, sendFlexMsgToUser, upload_image
 from hooks.ipb.make_linechart import create_VitalSignChart
 import uuid
@@ -73,7 +74,8 @@ class ChatBotFSM:
             '8': self.make_orderbyclass_handler('PCA'),
             '9': self.make_orderbyclass_handler('MBD'),
             '10': self.make_orderbyclass_handler(''),
-            '11': self.make_InPatientDocList_handler()
+            '11': self.make_InPatientDocList_handler(),
+            '12': self.make_WriteNote_handler(),
         }
     # 判斷事件類型並執行自動回覆：user輸入文字訊息=>message,user點擊btn=>postback
     def handle_event(self, event_type, data):
@@ -85,6 +87,9 @@ class ChatBotFSM:
     def handle_message_event(self, data):
             req_text = data['events'][0]['message']['text'] 
             user = data['events'][0]['source']['userId']
+            status = cache.get("teampluse:ipb:status:{0}".format(user))
+            
+
             if(req_text.strip().lower() == "list"):
                 id =str(uuid.uuid4())
                 # msg = makeFlexMsg_List(id)
@@ -118,8 +123,14 @@ class ChatBotFSM:
                 except Exception as e:
                     print(str(e))
                     send_message(user, '查無病人資料')
+            elif(not isNone(status) and status['status'] == "write_note"):
+                _id=str(uuid.uuid4())
+                msg =  makeFlexMsg_Translator(_id, "Hello, the ice cream is delicious.", req_text, status['chartno'], data['empInfo']['EMP_NO'])
+                sendFlexMsgToUser(user, msg)                 
             else:
                 send_message(user,"資料或格式錯誤,請重新輸入")
+                
+            cache.delete("teampluse:ipb:status:{0}".format(user))
     
     # 回覆user點擊btn
     def handle_postback_event(self,data):
@@ -131,7 +142,7 @@ class ChatBotFSM:
         postback_data = pars['value'][0]
         _id = pars['id'][0]
         # 點擊btn1,2
-        if postback_data in ['1','2','3','4','5','6','7','8','9','10','11']: 
+        if postback_data in ['1','2','3','4','5','6','7','8','9','10','11','12']: 
             handler = self.postback_handlers.get(postback_data)
             if handler:
                 handler(_id,data)
@@ -311,15 +322,25 @@ class ChatBotFSM:
                 except Exception as e:
                     print(str(e))
                     send_message(user, '查無病人資料')                
-                
-                
-
             else:
                 send_message(user, '查無資料')
-                
-           
         return handler    
-    
+
+    #點擊btn "紀錄病歷", value="12"
+    def make_WriteNote_handler(self):
+
+        def handler(_id, data):
+            user = data['events'][0]['source']['userId']
+            id=str(uuid.uuid4())
+            qs = data['events'][0]['data']
+            pars = parse_qs(qs)
+            api = pars['api'][0]
+            if(api == "write_note"):
+                chartno = pars['chartno'][0]
+                cache.set("teampluse:ipb:status:{0}".format(user), {"status":"write_note", "chartno":chartno}, timeout=600)
+            else:
+                send_message(user, '查無資料')
+        return handler   
     
 bot = ChatBotFSM()
 

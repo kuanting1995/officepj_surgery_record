@@ -2,6 +2,7 @@ import requests
 import json
 from datetime import datetime
 from lib.Checker import isNone
+from hooks.utils import get_med_info
 
 
 # 檢驗檢查 Details表格
@@ -965,6 +966,23 @@ def makeFlexMsg_PatBaseInfo(_id,data, userid):
 				"borderColor": "#DCDCDC",
 				"paddingStart": 10,
 				"paddingEnd": 10
+			},
+			{
+				"type": "footercontainer",
+				"contents": [
+					{
+						"type": "postbackbutton",
+						"text": "翻譯病歷",
+						"style": "primary",
+						"bgcolor":"#b5b398",
+                        "displayText": "請輸入一段文字...",
+                        "data": "value=12&api=write_note&id={0}&chartno={1}&userid={2}".format(_id, charNo, userid)
+                        
+					}
+				],
+				"borderColor": "#DCDCDC",
+				"paddingStart": 10,
+				"paddingEnd": 10
 			}
 		]
 	}
@@ -1153,6 +1171,152 @@ def makeFlexMsg_InPatientListByDoc(_id, patlist, docInfo):
 	}
 }
     return msg    
+
+
+
+def makeFlexMsg_Translator(id, enStr, chStr, chartNO, userid):
+    med = get_med_info(chartNO, userid)
+    
+    msg = {
+		"type": "flex",
+		"contents": {
+			"body": [
+				{
+					"type": "bodycontainer",
+					"contents": [
+						{
+							"type": "text",
+							"text": "病人：{0}-{1}".format(med['data']['CHART_NO'], med['data']['PAT_NAME']),
+							"align": "left",
+							"fontColor": "#373737",
+							"fontSize": 18,
+							"fontStyle": "normal",
+							"fontWeight": 900,
+							"marginTop": 10
+						}
+					],
+					"borderColor": "#DCDCDC",
+					"paddingStart": 10,
+					"paddingEnd": 10
+				},
+				{
+					"type": "bodycontainer",
+					"contents": [
+						{
+							"type": "text",
+							"text": "英文翻譯",
+							"align": "left",
+							"fontColor": "#373737",
+							"fontSize": 15,
+							"fontStyle": "normal",
+							"fontWeight": 900,
+							"marginTop": 10
+						}
+					],
+					"borderColor": "#DCDCDC",
+					"paddingStart": 10,
+					"paddingEnd": 10
+				},
+				{
+					"type": "separator",
+					"height": 1,
+					"bgcolor": "#DCDCDC"
+				},
+				{
+					"type": "bodycontainer",
+					"contents": [
+						{
+							"type": "text",
+							"text": enStr,
+							"align": "left",
+							"fontColor": "#ff0000",
+							"fontSize": 15,
+							"fontStyle": "normal",
+							"fontWeight": 400,
+							"marginTop": 10
+						}
+					],
+					"borderColor": "#DCDCDC",
+					"paddingStart": 10,
+					"paddingEnd": 10
+				},
+				{
+					"type": "separator",
+					"height": 1,
+					"bgcolor": "#DCDCDC"
+				},
+				{
+					"type": "bodycontainer",
+					"contents": [
+						{
+							"type": "text",
+							"text": "原文",
+							"align": "left",
+							"fontColor": "#373737",
+							"fontSize": 15,
+							"fontStyle": "normal",
+							"fontWeight": 900,
+							"marginTop": 10
+						}
+					],
+					"borderColor": "#DCDCDC",
+					"paddingTop": 0,
+					"paddingBottom": 0,
+					"paddingStart": 10,
+					"paddingEnd": 10
+				},
+				{
+					"type": "separator",
+					"height": 1,
+					"bgcolor": "#DCDCDC"
+				},
+				{
+					"type": "bodycontainer",
+					"contents": [
+						{
+							"type": "text",
+							"text": chStr,
+							"align": "left",
+							"fontColor": "#373737",
+							"fontSize": 15,
+							"fontStyle": "normal",
+							"fontWeight": 400,
+							"marginTop": 10
+						}
+					],
+					"borderColor": "#DCDCDC",
+					"paddingTop": 0,
+					"paddingBottom": 0,
+					"paddingStart": 10,
+					"paddingEnd": 10
+				}
+			],
+			"footer": [
+				{
+					"type": "footercontainer",
+					"contents": [
+						{
+							"type": "postbackbutton",
+							"text": "Post Back Button",
+							"style": "primary",
+							"displayText": "你好",
+							"data": "eeeeeeeeeeeee"
+						}
+					],
+					"borderColor": "#DCDCDC",
+					"paddingTop": 0,
+					"paddingBottom": 0,
+					"paddingStart": 10,
+					"paddingEnd": 10
+				}
+			]
+		}
+	}
+    return msg 
+
+
+
+
     
 # if __name__=="__main__":
 #     x = makeFlexMsgForUser("林OO", "20230424")
