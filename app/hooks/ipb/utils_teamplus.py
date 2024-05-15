@@ -1,10 +1,16 @@
-import requests
+import requests, os
 import json
 from  settings import Config
 import base64
 
+# CHANNEL_ACCESS_TOKEN = Config.TEST_IPB_CHANNEL_ACCESS_TOKEN
 
-CHANNEL_ACCESS_TOKEN = Config.IPB_CHANNEL_ACCESS_TOKEN
+PRODUCTION = os.getenv('PRODUCTION', "False").strip()
+
+if PRODUCTION in [True, 'true', 'True', 'TRUE']:
+    CHANNEL_ACCESS_TOKEN = Config.IPB_CHANNEL_ACCESS_TOKEN
+else:
+    CHANNEL_ACCESS_TOKEN = Config.TEST_IPB_CHANNEL_ACCESS_TOKEN
 
 # 傳Flex Messages給user
 def sendFlexMsgToUser(user,msg):
@@ -75,7 +81,7 @@ def updateFlexFooter(messagesn, user, finalMsg):
 def upload_image(image_data):
     url = "https://team.kfsyscc.org/API/MessageFeedService.ashx"
     
-    #image_data是二進位json不支援, 無法傳送,改用base64
+    #image_data是二進位json不支援, 無法傳送,轉成base64可用
     image_data_base64 = base64.b64encode(image_data).decode()
     # 簡易版通知（team+ 需開啟一對一交談）
     payload = {
