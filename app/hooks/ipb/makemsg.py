@@ -141,16 +141,14 @@ def makeFlexMsg_LabDetails(patname, category, lab_details):
 
 
 # 檢驗檢查 日期+分類按鈕
-# {"B": "#DCDCDC","C": "#C0F7A4","E": "#FDF6C0","eC": "#FDF6C0", "H": "#FFCDD2","I": "#B3E5FC","IM": "#B3E5FC","M": "#FFFAFA","S": "#D8B598","T": "#F5DEB3","U": "#F0E68C","D": "#FFFAFA"} 
-# 重整labdata格式:1.sys_date日期改為04/29格式 2.tests E改為=>eC,I=>IM 3.加入對應色彩color_mapping
+# 重整labdata格式:1.sys_date日期改為04/29格式 2.加入對應色彩color_mapping
 def reformat_data(lab_details):
     color_mapping = {"B": "#878787","C": "#44C200","E": "#EAE273","eC": "#EAE273", "H": "#F34A4A","I": "#4E8CCF","IM": "#4E8CCF","M": "#FEA2A2","S": "#D8B598","T": "#E5B95B","U": "#C5CB05","D": "#FFFAFA"}
     result = []
     for data in lab_details:
         sys_date = datetime.strptime(data["SYS_DATE"], '%Y%m%d').strftime('%m/%d')
         original_tests = [key for key in data.keys() if key != "SYS_DATE"]
-        tests = [key if key != 'E' and key != 'I' else 'E' if key == 'E' else 'I' for key in original_tests]
-        tests_with_color = {tests[i]: str(data[original_tests[i]]) + ', ' + color_mapping.get(original_tests[i], "#colorcode") for i in range(len(tests))} 
+        tests_with_color = {original_tests[i]: str(data[original_tests[i]]) + ', ' + color_mapping.get(original_tests[i], "#colorcode") for i in range(len(original_tests))} 
         result.append({"date": sys_date, "org_sys_date": data["SYS_DATE"],"tests": tests_with_color})
     return result
 def makeFlexMsg_Lab(patname,lab_details,_id):
@@ -237,7 +235,6 @@ def makeFlexMsg_Lab(patname,lab_details,_id):
                 container["contents"].append({
                     "type": "postbackbutton",
                     "text": f"{test}",
-                    # "text": f"{test} /{test_value}",
                     "style": "primary",
                     # "fontColor": "#373737",
 					"bgcolor": test_color,                  
@@ -252,7 +249,7 @@ def makeFlexMsg_Lab(patname,lab_details,_id):
     return msg
 
 # 生命徵象折線圖
-def makeFlexMsg_VitalSignChart(patname,imageid):
+def makeFlexMsg_VitalSignChart(patname,imageid_main):
     
     msg = {
 	"type": "flex",
@@ -282,9 +279,9 @@ def makeFlexMsg_VitalSignChart(patname,imageid):
 				"contents": [
 					{
 						"type": "image",
-						"id": imageid['FileID'],
+						"id":imageid_main['FileID'],
 						"aspectRatio": "7:3",
-    #   ***w950 7：3, w900 9:4
+    				#   ***w950 7：3, w900 9:4
 						"scaleType": "fit"
 					}
 				],
@@ -515,10 +512,10 @@ def makeFlexMsg_CategoryOrder(_id,obj):
 				"contents": [
 					{
 						"type": "postbackbutton",
-						"text": "檢驗檢查",
+						"text": "檢查醫囑",
 						"style": "primary",
 						"bgcolor": "#6A8391",
-                        "displayText": '已查詢"檢驗檢查"active order',
+                        "displayText": '已查詢"檢查醫囑"active order',
                         "data": "value=6&id="+_id
 					},
 					{
@@ -884,10 +881,10 @@ def makeFlexMsg_PatBaseInfo(_id,data, userid):
 				"contents": [
 					{
 						"type": "postbackbutton",
-						"text": "檢驗檢查",
+						"text": "檢驗醫囑",
 						"style": "primary",
 						"bgcolor": "#6A8391",
-                        "displayText": '已查詢"檢驗檢查"active order',
+                        "displayText": '已查詢"檢驗醫囑"active order',
                         "data": "value=6&id="+_id
 					},
 					{
@@ -972,7 +969,7 @@ def makeFlexMsg_PatBaseInfo(_id,data, userid):
 				"contents": [
 					{
 						"type": "postbackbutton",
-						"text": "翻譯病歷",
+						"text": "病歷創作",
 						"style": "primary",
 						"bgcolor":"#b5b398",
                         "displayText": "請輸入一段文字...",
@@ -991,9 +988,6 @@ def makeFlexMsg_PatBaseInfo(_id,data, userid):
 
 
 
-
-
-# 病人基本資料+ 查詢按鈕 x3
 def makeFlexMsg_List(_id):
 
     msg = {
@@ -1046,7 +1040,7 @@ def makeFlexMsg_List(_id):
 }
     return msg
 
-
+# 選擇醫師清單
 def makeFlexMsg_InPatientDocList(_id, docList):
     colors = ['#098C02', '#037BC9']
     
@@ -1111,7 +1105,7 @@ def makeFlexMsg_InPatientDocList(_id, docList):
     return msg
 
 
-
+# 醫生-住院病人清單
 def makeFlexMsg_InPatientListByDoc(_id, patlist, docInfo):
 
     
@@ -1173,7 +1167,7 @@ def makeFlexMsg_InPatientListByDoc(_id, patlist, docInfo):
     return msg    
 
 
-
+# 翻譯導出
 def makeFlexMsg_Translator(id, enStr, chStr, chartNO, userid):
     med = get_med_info(chartNO, userid)
     
@@ -1290,31 +1284,10 @@ def makeFlexMsg_Translator(id, enStr, chStr, chartNO, userid):
 					"paddingStart": 10,
 					"paddingEnd": 10
 				}
-			],
-			"footer": [
-				{
-					"type": "footercontainer",
-					"contents": [
-						{
-							"type": "postbackbutton",
-							"text": "Post Back Button",
-							"style": "primary",
-							"displayText": "你好",
-							"data": "eeeeeeeeeeeee"
-						}
-					],
-					"borderColor": "#DCDCDC",
-					"paddingTop": 0,
-					"paddingBottom": 0,
-					"paddingStart": 10,
-					"paddingEnd": 10
-				}
 			]
 		}
 	}
     return msg 
-
-
 
 
     

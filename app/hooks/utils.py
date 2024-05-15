@@ -278,7 +278,6 @@ def get_vitalsignData(chartno,searchdate,intervaldays):
 def get_Lab(top,chartno):
     rs = None
     try:
-        # URI = "http://127.0.0.1:5000/slight/api/teamplus/GetLab"=>測試
         URI = "{0}/slight/api/teamplus/GetLab".format(Config.K8S_URL)
         req_data = {
             "Top":top,
@@ -318,11 +317,10 @@ def get_LabDetails(chartno, category, date):
             else:
                 latest_4_dates = sorted([d for d in rs['das'] if d < date], reverse=True)[:4]
                 
-            # 2.抓出所有name 並將latest_4_dates中有值的填入name下
-            # 建立一個以 name 為 key 的字典，並初始化所有日期的值為空字符串
+            # 2.抓出所有name,建立一個以 name 為 key 的字典，並初始化所有日期的值為空字符串
             rows_dict = {row['name']: {date: '-' for date in latest_4_dates} for row in rs['rows'] if row['name'] not in IGNORE_ITEMS}
 
-            # 更新字典中的值
+            # 更新字典中的值,將latest_4_dates中有值的填入name下
             for row in rs['rows']:
                 for date in latest_4_dates:
                     if date in row:
@@ -356,6 +354,27 @@ def emrlog(empno, cNo, pgid, memo):
             headers={ 'Content-Type': 'application/json'}
             return call_api(uri= URI, payload= json.dumps(req_data), headers= headers, timeout=5)
 
-        except Exception as e: 
+        except Exception as e:
             logger.error('emrlog: {0}'.format(str(e))) 
-    return None        
+    return None
+
+
+# 獲取GPT翻譯
+@cache.memoize(600)
+def get_translate_gpt(text):
+    rs = None
+    try:
+        URI = "{0}/pywebhook/translate_gpt".format(Config.K8S2_URL)
+        # 資料"PID":"5902","USER_ID":"004909",
+        req_data = {
+            "text": text
+        }
+        headers={ 'Content-Type': 'application/json'}
+        content = call_api(uri= URI, payload= json.dumps(req_data), headers= headers)
+        if(not isNone(content) ):
+            rs = json.loads(content)
+    except Exception as e: 
+        logger.error('get_translate_gpt: {0}'.format(str(e))) 
+        return None
+    # print('rs',rs)
+    return rs['text']
