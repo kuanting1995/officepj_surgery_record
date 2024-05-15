@@ -48,7 +48,11 @@ def create_VitalSignChart_main(data):
         }
     },
     "yAxis": [
-    {   "opposite": False,
+    # 第1條 綠色血壓線
+    {   "min": 0,  # y軸最小值
+        "max": 250,  # y軸最大值
+        "tickAmount": 6,  # y軸刻度數量
+        "opposite": False,
         "offset": 35,
         "title": {
             "text": ""
@@ -60,7 +64,11 @@ def create_VitalSignChart_main(data):
             }
         }
     },
-    {   "opposite": False,
+    # 第2條 紅色脈膊線
+    {   "min": 40,  # y軸最小值
+        "max": 140,  # y軸最大值
+        "tickAmount": 6,  # y軸刻度數量
+        "opposite": False,
         "offset": 0,
         "title": {
             "text": ""
@@ -72,13 +80,19 @@ def create_VitalSignChart_main(data):
             }
         }
     },
-    { 
+    # 第3條 黑色呼吸線
+    {   "min": 0,  # y軸最小值
+        "max": 50,  # y軸最大值
+        "tickAmount": 6,  # y軸刻度數量
         "title": {
             "text": '',
         },
         "opposite": True
     },
-    { 
+    # 第4條 藍色體溫線
+    {   "min": 35,  # y軸最小值
+        "max": 40,  # y軸最大值
+        "tickAmount": 6,  # y軸刻度數量
         "title": {
             "text": '',
         },
@@ -211,90 +225,6 @@ def create_VitalSignChart_main(data):
             "color": "#3366ff",
             "lineWidth": 1,
             "yAxis": 3,
-            "marker": {
-                "symbol": "circle",
-                "radius": 2
-            },
-            "dataLabels": {
-                "enabled": True,
-                "format": "{y}",
-                "color": "#3366ff",
-                "align": "right",
-                "x": 10,
-                "y": 20,
-                "style": {
-                    "fontSize": '6px'
-                }
-            }
-        }]
-    }
-            
-    # Highcharts Export Server URL
-    
-    url = "{0}/export".format(Config.HIGHCHARTS_SERVER)
-    # 发送 POST 请求到 Export Server
-    response = requests.post(url, json={"options": options, "type": "png"})     
-    # print(response)     
-    if response.status_code == 200:
-        return response.content
-    else:
-        return b""
-
- 
-# 體溫圖表
-def create_VitalSignChart_TEMP(data):
-
-    # 格式日期不要年份 04/15 12:00
-    formatted_dates = [datetime.strptime(item["datetime"], "%Y/%m/%d %H:%M").strftime("%m/%d %H:%M") for item in data]
-    # print('formatted_dates',formatted_dates)
-
-    # 生成 Highcharts 配置
-    options = {
-    "chart": {
-        "width": 950  # 調整此數值以改變圖表寬度
-    },
-    "title": {
-        "text": "vital sign",
-        "style": {
-            "color": "#666666", 
-            "fontSize": "14px"
-        }
-    },
-    "xAxis": {
-        "categories": formatted_dates,
-        "title": {
-            "text": ""
-        },
-        "labels": {
-            "style": {
-                "fontSize": "9px"
-            }
-        }
-    },
-       "yAxis": {
-        "title": {
-            "text": ""
-        },
-        "labels": {
-            "style": {
-                "fontSize": "12px"
-            }
-        }
-    },
-    "exporting": {
-        "scale": 20
-    },
-    "legend": {
-        "itemStyle": {
-            "fontSize": "14px"
-        }
-    },
-    "series": [
-        {
-            "type": "line",
-            "data": [item["TEMP"] for item in data],
-            "name": "Temp(˚C)",
-            "color": "#3366ff",
             "marker": {
                 "symbol": "circle",
                 "radius": 2
