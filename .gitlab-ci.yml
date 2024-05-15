@@ -1,7 +1,7 @@
 variables:
   CI_USER_ID: 003549
   CI_REGISTRY: harbor2.kfsyscc.org
-  CI_COMMIT_SHORT_SHA: 24.1.5.22
+  CI_COMMIT_SHORT_SHA: 24.1.5.23
   CI_APP_NAME: hookap
   CI_API: /api/hookap
   CI_IMAGE:  $CI_REGISTRY$CI_API:$CI_COMMIT_SHORT_SHA
