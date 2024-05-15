@@ -5,7 +5,7 @@ import base64
 
 # CHANNEL_ACCESS_TOKEN = Config.TEST_IPB_CHANNEL_ACCESS_TOKEN
 
-PRODUCTION = os.getenv('PRODUCTION', "False").strip()
+PRODUCTION = os.getenv('PRODUCTION', "True").strip()
 
 if PRODUCTION in [True, 'true', 'True', 'TRUE']:
     CHANNEL_ACCESS_TOKEN = Config.IPB_CHANNEL_ACCESS_TOKEN

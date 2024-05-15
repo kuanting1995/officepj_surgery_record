@@ -22,7 +22,7 @@ from .utils import get_in_patient_doc_list, get_in_patient_by_doc
 
 # CHANNEL_ACCESS_TOKEN = Config.TEST_IPB_CHANNEL_ACCESS_TOKEN
 
-PRODUCTION = os.getenv('PRODUCTION', "False").strip()
+PRODUCTION = os.getenv('PRODUCTION', "True").strip()
 
 if PRODUCTION in [True, 'true', 'True', 'TRUE']:
     DATABASE_URL = "https://emr.kfsyscc.org/mongo/teamplus_ipb/requests"
