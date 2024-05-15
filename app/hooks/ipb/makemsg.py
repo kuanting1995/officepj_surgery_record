@@ -108,7 +108,9 @@ def makeFlexMsg_LabDetails(patname, category, lab_details):
         }
     }
     
-    for item in lab_details['result_data'][:28]:
+    # for item in lab_details['result_data'][:28]:(只抓前28項目)
+    # =>改成遍歷所有資料:
+    for item in lab_details['result_data']:
 
         lab_details = lab_details_list(item, latest_4_dates)
         
