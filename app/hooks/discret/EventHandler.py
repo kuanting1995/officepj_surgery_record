@@ -125,6 +125,7 @@ def comfirm_discert(caller, data):
     cert = get_DiagCertificate(docno, certno)
     if(not isNone(cert) and not isNone(cert[0]['CONFIRM_URL']) and cert[0]['DOC_NO'] == emp['EMP_NO']):
         request_api(cert[0]['CONFIRM_URL'])
+        logger.info("{0}-{1}".format(emp['EMP_NO'], '診斷書已確認'))
         sendTextMsgToUser(user, '{0}-診斷書已確認'.format(msg['rawdata']['PAT_NAME']), caller.AccessToken)
     elif(not isNone(cert) and cert[0]['DOC_NO'] != emp['EMP_NO']):
         sendTextMsgToUser(user, '人員身份認證錯誤無法簽章', caller.AccessToken)
