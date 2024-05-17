@@ -99,14 +99,13 @@ class ChatBotFSM:
             user = data['events'][0]['source']['userId']
             status = cache.get("teampluse:ipb:status:{0}".format(user))
             
-
             if(req_text.strip().lower() == "list"):
                 id =str(uuid.uuid4())
                 # msg = makeFlexMsg_List(id)
                 # msg = sendFlexMsgToUser(user, msg)
                 docs = get_in_patient_doc_list(data['empInfo']['EMP_NO'])
                 msg = makeFlexMsg_InPatientDocList(id, docs['data'])
-                sendFlexMsgToUser(user, msg)   
+                sendFlexMsgToUser(user, msg)
             elif(req_text.strip().lower() == "mylist"):
                 id =str(uuid.uuid4())
                 pats = get_in_patient_by_doc(data['empInfo']['EMP_NO'])
@@ -327,6 +326,7 @@ class ChatBotFSM:
             elif(api == "in_patient_list_by_doc"):
                 docno = pars['docno'][0]
                 pats = get_in_patient_by_doc(docno)
+                # print("pats['data']",pats['data'])
                 msg = makeFlexMsg_InPatientListByDoc(id, pats['data'], pats['docInfo'])
                 sendFlexMsgToUser(user, msg)
             elif(api == "in_patient_info"):
