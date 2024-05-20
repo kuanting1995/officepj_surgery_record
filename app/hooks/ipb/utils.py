@@ -41,7 +41,9 @@ def get_in_patient_by_doc(docno):
         content = call_api(uri= URI, payload= json.dumps(req_data), headers= headers, timeout=15)
         if(not isNone(content) ):
             rs = json.loads(content)
-            print(rs)
+            if(not isNone(rs['data'])):
+                rs['data'] = sorted(rs['data'], key=lambda pat: pat['SEQNO'])
+            
     except Exception as e: 
         logger.error('get_in_patient_doc_list: {0}'.format(str(e))) 
         return None
