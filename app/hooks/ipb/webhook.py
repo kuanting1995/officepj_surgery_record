@@ -34,9 +34,7 @@ else:
 
 @api_route(rule = '', params=None ,methods=['POST', 'GET'])
 def _webhook():
-    get_in_patient_by_doc("000834")
     if not request.data:
-        emp = get_user_info_by_ad('linhui')
         return "Webhook received!"
     data = request.json
     
