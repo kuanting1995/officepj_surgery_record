@@ -12,7 +12,7 @@ import base64
 def get_in_patient_doc_list(user_id):
     rs = None
     try:
-        URI = "{0}/slight/api/emp/InPatientDocList".format(Config.K8S_URL)
+        URI = "{0}/slight/api/emp/InPatientDocList".format(Config.K8S2_URL)
         # 資料
         req_data = {
             "USER_ID": user_id
@@ -32,7 +32,7 @@ def get_in_patient_doc_list(user_id):
 def get_in_patient_by_doc(docno):
     rs = None
     try:
-        URI = "{0}/slight/api/teamplus/GetInPatientListByDoc".format(Config.K8S_URL)
+        URI = "{0}/slight/api/teamplus/GetInPatientListByDoc".format(Config.K8S2_URL)
         # 資料
         req_data = {
             "USER_ID": docno
@@ -41,6 +41,7 @@ def get_in_patient_by_doc(docno):
         content = call_api(uri= URI, payload= json.dumps(req_data), headers= headers, timeout=15)
         if(not isNone(content) ):
             rs = json.loads(content)
+            print(rs)
     except Exception as e: 
         logger.error('get_in_patient_doc_list: {0}'.format(str(e))) 
         return None

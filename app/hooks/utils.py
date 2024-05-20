@@ -109,7 +109,7 @@ def is_top_role(user_id):
 def get_user_info(user_id):
     rs = None
     try:
-        URI = "{0}/slight/api/emp/CurrentEmployee".format(Config.K8S_URL)
+        URI = "{0}/slight/api/emp/CurrentEmployee".format(Config.K8S2_URL)
         # 資料
         req_data = {
             "EMP_NO": user_id,
@@ -129,7 +129,7 @@ def get_user_info(user_id):
 def get_user_info_by_email(email):
     rs = None
     try:
-        URI = "{0}/slight/api/emp/CurrentEmployeeByEmail".format(Config.K8S_URL)
+        URI = "{0}/slight/api/emp/CurrentEmployeeByEmail".format(Config.K8S2_URL)
         # 資料
         req_data = {
             "EMAIL": email,
@@ -160,7 +160,7 @@ def get_user_info_by_ad(ad):
 def get_med_info(pat_id, userid):
     rs = None
     try:
-        URI = "{0}/slight/api/nis/inp/GetInpInfo".format(Config.K8S_URL)
+        URI = "{0}/slight/api/nis/inp/GetInpInfo".format(Config.K8S2_URL)
         # 資料"PID":"5902","USER_ID":"004909",
         req_data = {
             "PID": pat_id,
@@ -203,7 +203,7 @@ def get_majorname_list(inpno):
 def get_activeorder_by_type(inpno,ordertype):
     rs = None
     try:
-        URI = "{0}/slight/api/nis/inp/GetOrdbyType".format(Config.K8S_URL)
+        URI = "{0}/slight/api/nis/inp/GetOrdbyType".format(Config.K8S2_URL)
         req_data = {
             "InpNo": inpno,
             "OrderType": ordertype
@@ -236,7 +236,7 @@ def get_orderRecent(inpno):
 def get_activeorder_all(chartno,inpno,ordertype):
     rs = None
     try:
-        URI = "{0}/slight/api/nis/inp/ActiveOrds".format(Config.K8S_URL)
+        URI = "{0}/slight/api/nis/inp/ActiveOrds".format(Config.K8S2_URL)
         req_data = {
             # "ChartNo": '0682118',
             "ChartNo": chartno,
@@ -258,7 +258,7 @@ def get_vitalsignData(chartno,searchdate,intervaldays):
     rs = None
     try:
         # URI = "http://127.0.0.1:5000/slight/api/teamplus/GetVitalInp"
-        URI = "{0}/slight/api/teamplus/GetVitalInp".format(Config.K8S_URL)
+        URI = "{0}/slight/api/teamplus/GetVitalInp".format(Config.K8S2_URL)
         req_data = {
             "Chartno": chartno,
             "SearchDate": searchdate,
@@ -278,7 +278,7 @@ def get_vitalsignData(chartno,searchdate,intervaldays):
 def get_Lab(top,chartno):
     rs = None
     try:
-        URI = "{0}/slight/api/teamplus/GetLab".format(Config.K8S_URL)
+        URI = "{0}/slight/api/teamplus/GetLab".format(Config.K8S2_URL)
         req_data = {
             "Top":top,
             "Chartno": chartno
