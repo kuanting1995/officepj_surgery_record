@@ -1120,7 +1120,7 @@ def makeFlexMsg_InPatientListByDoc(_id, patlist, docInfo):
 				"contents": [
 					{
 						"type": "postbackbutton",
-						"text": "{0}-{1}/{2}/專師-{3}".format(p['NOW_STATIONNO'], p['NOW_BEDNO'], p['PAT_NAME'],p['NOW_DOC_NAME2']),
+						"text": "{0}-{1}/{2}/ANP-{3}".format(p['NOW_STATIONNO'], p['NOW_BEDNO'], p['PAT_NAME'],p['NOW_DOC_NAME2']),
 						"style": "primary",
 						"bgcolor": '#098C02',
 						"displayText": "查詢中....",
