@@ -1,0 +1,8 @@
+
+{
+    // React 相關設定
+    "files.associations": {"*.js":"javascriptreact"},
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+      },
+}

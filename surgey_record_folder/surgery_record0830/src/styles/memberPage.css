@@ -1,0 +1,548 @@
+/* body{
+    font-family: 'PMingLiU YaHei', 'sans-serif';
+} */
+
+
+.member_sidebar{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* padding: 0px 0px 50px 11px; */
+    /* width: 240px; */
+    background: #DCDDD5;
+    /* border-radius: 0px 50px 50px 0px; */
+
+}
+
+.sidebar_btn{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /* padding: 15px 30px 45px; */
+    padding: 0px 30px;
+    gap: 20px;
+    width: 229px;
+    height: 70px;
+    background: #DCDDD5;
+    /* border-radius: 0px 30px 30px 0px; */
+    /* margin: -25px 0px; */
+    color: #484848;
+    text-decoration: none
+}
+
+.sidebar_btn_active{
+    /* border-radius: 30px 0px 0px 30px; */
+    background-color: #484848;
+    color: #F4F4F4;
+    text-decoration: none
+}
+
+.member_container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 25px;
+    width: 1500px;
+  
+}
+
+.now_memberPage{
+    font-weight: 550;
+    font-size: 36px;
+    line-height: 36px;
+    letter-spacing: 0.075em;
+    color: #4F4F4F;
+    width: 100%;
+
+}
+
+.basic_infomation{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 30px;
+    width: 1425px;
+}
+.member_box{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+    gap: 10px;
+    width: 600px;
+    height: 100px;
+
+}
+
+.member_box>label{
+    font-size: 16px;
+    line-height: 27px;
+    letter-spacing: 0.075em;
+    color: #4F4F4F;
+
+}
+
+.member_box>input,.member_box>select{
+    padding: 10px;
+    width: 100%;
+    height: 44px;
+    border: 1px solid #FCC894;
+    border-radius: 5px;
+}
+.city_dist{ 
+    width: 450px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 30px;
+
+   
+}
+.city_dist>.member_box{
+    width: 210px;
+}
+.edit_password_btn{
+    padding: 10px;
+    width: 100%;
+    height: 44px;
+    border: 1px solid #FCC894;
+    border-radius: 5px;
+    color: #F4F4F4;
+    text-align: start;
+    position: relative;
+}
+
+.edit_password_btn::before{
+    content: ''; 
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top:0;
+    border-radius: 3px;
+    background: #1d2e64ce;
+    z-index: -2;
+}
+
+.form_btn_group{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding: 0px 10px;
+    gap: 16px;
+    margin-bottom: 30px;
+    width: 100%;
+
+}
+.form_btn_group>button{
+    text-align: center;
+    padding: 5px;
+    gap: 5px;
+    width: 100px;
+    height: 37.38px;
+   
+    border-radius: 5px;
+} 
+.basic_infomation_confirm{ 
+    color: #233A66;
+    position: relative;
+}
+
+.basic_infomation_confirm::before{
+    content: ''; 
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top:0;
+    border-radius: 3px;
+    background-color: #FFD686;
+    z-index: -2;
+   
+}
+.basic_infomation_cancle{
+    position: relative;
+    color:#F4F4F4
+}
+.basic_infomation_cancle:hover{
+    color: #fff;
+}
+.basic_infomation_cancle::before{
+    content: ''; 
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top:0;
+    border-radius: 3px;
+    background-color: #6b6b6b;
+    z-index: -2;
+   
+}
+.auth_container{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 25px;
+}
+.auth_detail_box>svg>g>path{
+    stroke: #F4F4F4;
+}
+.auth_detail_box.auth_checked>svg>g>path{
+    stroke: #4f4f4f;
+}
+.auth_detail_box{
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    gap: 5px;
+    color: #F4F4F4;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 15px;
+    text-align: center;
+    letter-spacing: 0.075em;
+    height: 40px;
+    border-radius: 3px;
+}
+.auth_detail_box::before{
+    content: ''; 
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top:0;
+    border-radius: 3px;
+    background-color: #6b6b6b;
+    z-index: -2;
+   
+}
+
+.auth_checked::before{
+    content: ''; 
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top:0;
+    border-radius: 3px;
+    background-color: #ffd786;
+    z-index: -2;
+}
+.auth_checked{
+    color:#233A66 ;
+}
+
+.member_List,.member_shoppingList_detail{
+    width: 1440px;
+
+}
+.member_List>thead>tr{
+    display: flex;
+    flex-direction: row;
+    
+    align-items: flex-start;
+    padding: 20px 50px;
+    width: 100%;
+    height: 56px;
+    background: #1D2D64;
+    color: #F4F4F4;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 16px;
+    border-width: 1px 0px;
+    border-style: solid;
+    border-color: #1D2D64;
+    justify-content: space-between;
+    
+}
+
+.member_List>tbody>tr{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 20px 50px;
+    justify-content: space-between;
+    width: 100%;
+    
+    border-width: 2px 0px;
+    border-style: solid;
+    border-color: #F3D775;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 16px;
+
+}
+.member_List>tbody,.member_shoppingList_detail>tbody{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.member_List>tbody>tr>td,.member_List>thead>tr>th,.member_shoppingList_detail>thead>tr>th,.member_shoppingList_detail>tbody>tr>td{
+    width: 184px;
+    display:flex;
+    align-items: center;
+    justify-self: center;
+}
+.member_List>tbody>tr>:first-child{
+    color: #E59069;
+   
+
+}
+.view_more_btn{
+    color: #f4f4f4;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 37px;
+    text-align: center;
+    width: 100px;
+    background-color: transparent;
+    border: none;
+   
+} 
+.view_more_btn::before{
+    content: ''; 
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top:0;
+    border-radius: 3px;
+    background-color: #E59069;
+    z-index: -2;
+   
+}
+.basic_receive_done{
+    color: #f4f4f4;
+}
+.basic_receive_done::before {
+    content: ''; 
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top:0;
+    border-radius: 3px;
+    background-color: #E59069;
+    z-index: -2;
+}
+.memberPage_button{
+    position: relative;
+    background-color: transparent;
+    border: none;
+    border-radius: 3px;
+  
+}
+
+.memberPage_button::after{
+    content: ''; 
+    width: 0%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top:0;
+    border-radius: 3px;
+    transition: all.3s;
+    background-color: #3a3a3a33;
+    z-index: -1;
+}
+
+.memberPage_button:hover::after{
+    width: 100%;
+} 
+
+.member_mobile_show{
+    display: none  ;
+  } 
+
+.auth_check_btn{
+    width:100%;
+    color: #f4f4f4;
+    position: relative;
+    height: 37.38px;
+}
+
+
+.avatar_box>.memberAvatar{
+    width: 30%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+
+}
+
+/* 手機版 */
+
+@media screen and (max-width: 375px ){
+    body{
+        font-size: 0.8em;
+    }
+    .member_body{
+        width: 375px;
+        margin-bottom: 10px;
+        height: auto;
+        display: block;
+    }
+    .member_mobile_hidden{
+      display: none !important ;
+    }
+
+    .member_mobile_show{
+        display: block ;
+      } 
+
+    .member_container{
+        width: 375px;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+    .now_memberPage{
+        text-align: center;
+        margin-top: 20px;
+    }
+    .basic_infomation{
+        width: 100%;
+        justify-content: center;
+        gap: 5px;
+    }
+    .member_box{
+        flex-direction: row;
+        width: 80%;
+    }
+    .member_box>label{
+        width: 100px;
+    }
+
+    .member_box>input,.member_box>select{
+        width: 250px;
+        border-width: 0 0 1px 0 ;
+        border-radius: 0;
+    }
+    .city_dist{
+        flex-direction: column;
+        width: 80%;
+    }
+    .city_dist>.member_box {
+        width: 100%;
+    }
+
+    .form_btn_group{
+        justify-content: space-between;
+    }
+    
+    .auth_container{
+        justify-content: center;
+        width: 90%;
+        height: 37.38px;
+        overflow: hidden;
+        transition: .3s;
+        position: relative;
+    }
+
+    .auth_container::before{
+        content: ''; 
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top:0;
+        border-radius: 3px;
+        background-color: #4f4f4f94;
+        z-index: -2;
+    }
+
+    .auth_detail_box,.auth_detail_box>svg>g>path {
+        color: #4F4F4F;
+        stroke:#4F4F4F
+    }
+    .auth_detail_box::before {
+        background-color: #f4f4f4;
+    }
+
+    .auth_checked::before{
+        content: ''; 
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top:0;
+        border-radius: 3px;
+        background-color: #ffd786;
+        z-index: -2;
+    }
+    .authShow{
+        height: 200px;
+    }
+
+    .mobile_member_List{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        padding: 20px;
+        table-layout: fixed;
+        width: 100%;
+    }
+    .mobile_member_List>tbody{
+        width: 100%;
+        border-width: 2px 0px;
+        border-style: solid;
+        border-color: #F3D775;
+        padding: 20px;
+    
+    }
+    .mobile_member_List>tbody>tr{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0;
+    }
+
+    .mobile_member_List.coupon>tbody>tr:first-child{
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    .mobile_member_List>tbody>tr:first-child>td:last-child{
+        color:#E59069 ;
+    }
+    .mobile_member_List>tbody>tr>td:last-child{
+        color: #233A66;
+    }
+    .view_more_btn{
+        height: 25px;
+        line-height: 25px;
+        font-size: 14px;
+    }
+
+    .mobile_member_List>tbody>tr>td>img{
+        width: 50px;
+        height: 70px;
+        object-fit: cover;
+    }
+    .avatar_box{
+        width: 100%;
+        padding: 10px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    
+
+}

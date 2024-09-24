@@ -1,0 +1,25 @@
+/* .member_body{
+    width: 375px;
+    margin-bottom: 10px;
+    height: auto;
+} */
+
+.member_body_nav{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 20px;
+    width: 475px;
+    height: 1000px;
+   
+}
+
+/* 手機版 */
+
+@media screen and (max-width: 375px ){
+   
+    .member_mobile_hidden{
+      display: none !important ;
+    }
+}

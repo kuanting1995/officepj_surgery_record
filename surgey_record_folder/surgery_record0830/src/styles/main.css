@@ -1,0 +1,198 @@
+@font-face {
+  font-family: 'syscc';
+  src: url('https://ehis.kfsyscc.org/FilesServer/fonts/syscc_emp.woff') format('woff');
+}
+body{
+  font-family:"monospace","syscc","微軟正黑體";
+}
+
+.formStyle {
+  width: auto;
+  display: block;
+  padding: 0px 12px;
+}
+
+.crud-btn {
+  width: 10%;
+  height: 50px;
+  background-color: none;
+  border: 1px solid #DCDDD5;
+  color: #484848;
+  position: relative;
+  overflow: hidden;
+}
+
+/* .crud-btn::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background: #484848;
+  bottom: 0;
+  left: 0;
+  transition: width 0.5s;
+}
+
+.crud-btn:hover::after {
+  width: 100%;
+} */
+
+.crud-btn:hover {
+  background-color: #484848;
+  color: #DCDDD5;
+}
+
+.btn-submit{
+  width: 10%;
+  height: 50px;
+  background-color: none;
+  border: 3px solid #a8b3f4;
+  color: #484848;
+  position: relative;
+  overflow: hidden;
+}
+.btn-submit:hover{
+  background-color: #a8b3f4;
+  border: 3px solid #a8b3f4;
+  color: #484848;
+  position: relative;
+  overflow: hidden;
+}
+/* 頁簽按鈕 form 術前術後其他 */
+.article-btn{
+  width:10%;
+  height: auto;
+  background-color: none;
+  border: 1px solid #828282;
+  color: #484848;
+}
+.article-btn.selected{
+  width:10%;
+  height: auto;
+  background-color: #828282;
+  border: 1px solid #828282;
+  color: #DCDDD5;
+}
+.article-btn:hover{
+  width:10%;
+  height: auto;
+  background-color: #828282;
+  border: 1px solid #828282;
+  color: #DCDDD5;
+}
+
+/* btn form術前診斷/術前術式 */
+.article-btn2{
+  width:15%;
+  height: auto;
+  background-color: #ead2b2;
+  color: #828282;
+  border-radius: 10px 0px 10px 0px;
+  border-color: #DCDDD5;
+}
+.article-btn2:hover{
+  background-color: #f9b844;
+  color: #828282;
+ 
+}
+/* btn form門診診斷/i9轉i10 */
+.article-btn3{
+  width:10%;
+  height: auto;
+  background-color: none;
+  border: 1px solid #828282;
+  color: #484848;
+}
+.article-btn3:hover{
+  width:10%;
+  height: auto;
+  background-color: #828282;
+  border: 1px solid #828282;
+  color: #DCDDD5;
+}
+/* btn-form */
+.article-btn4{
+  width:auto;
+  height: auto;
+  background-color: none;
+  border: 1px solid #828282;
+  color: #484848;
+}
+.article-btn4:hover{
+  width:auto;
+  height: auto;
+  background-color: #828282;
+  border: 1px solid #828282;
+  color: #DCDDD5;
+}
+
+/* sidebar */
+.sidebar_btn{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* padding: 15px 30px 45px; */
+  padding: 0px 30px;
+  gap: 20px;
+  width: 229px;
+  height: 70px;
+  background: #DCDDD5;
+  /* border-radius: 0px 30px 30px 0px; */
+  /* margin: -25px 0px; */
+  color: #484848;
+  text-decoration: none
+}
+
+.sidebar_btn_active{
+  /* border-radius: 30px 0px 0px 30px; */
+  background-color: #484848;
+  color: #F4F4F4;
+  text-decoration: none
+}
+
+@media (max-width: 768px) {
+  .sidebar{
+    display: none;
+  }  
+}
+
+
+.frame-zone{
+  border:1px solid #828282;
+  margin: 5px 5px 5px 0px;
+  padding: 10px;
+}
+
+.no-padding{
+  padding: 0px;
+}
+
+row{
+  margin-bottom: 100px;
+}
+
+/* nav */
+.nav_btn{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* padding: 15px 30px 45px; */
+  padding: 0px 30px;
+  gap: 20px;
+  width: 200px;
+  height: 50px;
+  background: #a7a7a7;
+  color: #484848;
+  text-decoration: none
+}
+
+.nav_btn:hover{
+  background-color: #484848;
+  color: #F4F4F4;
+  text-decoration: none
+}
+.nav_btn_active{
+  background-color: #484848;
+  color: #F4F4F4;
+  text-decoration: none
+}

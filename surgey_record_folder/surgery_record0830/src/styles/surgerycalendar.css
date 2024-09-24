@@ -1,0 +1,55 @@
+.thead-sticky th {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+}
+.link-button {
+  color: #828282;
+  text-decoration: none;
+}
+.SurgeryForm {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh; 
+}
+
+
+/*日曆表格樣式 */
+/* 表格框顏色 */
+.table-bordered {
+  border-color: #808080; /* 你想要的顏色 */
+}
+
+/* 設定第一行的背景色 */
+.thead-sticky th {
+  background-color: #a7a7a7;
+}
+
+/* 設定第一二列的背景色 */
+/* table tr td:nth-child(0), table tr td:nth-child(1) {
+  background-color: #a7a7a7;
+} */
+
+/* calendar 上下週按鈕 */
+.btn-week{
+  color: #484848;
+  background-color: #f9b844;
+  border:none;
+  width: 155px;
+  height: 50px;
+}
+.btn-week:hover{
+  color: #484848;
+  background-color: #ead2b2;
+  border:none;
+  width: 155px;
+  height: 50px;
+}
+
+
+.navbar-expand-lg .navbar-nav .nav-link {
+  padding-right: 0;
+  padding-left: 0;
+}
